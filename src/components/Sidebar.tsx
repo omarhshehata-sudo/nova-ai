@@ -67,6 +67,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="sidebar-bottom">
         <button
           className="sidebar-nav-item"
+          onClick={() => onSectionChange('memory')}
+          title="Memory"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#00d9ff" />
+                <stop offset="100%" stopColor="#6366f1" />
+              </linearGradient>
+            </defs>
+            <g fill="url(#brainGradient)">
+              <path d="M12 2a4 4 0 0 0-4 4c0 .74.2 1.43.55 2.02A3.98 3.98 0 0 0 6 12c0 1.2.53 2.27 1.37 3H7a3 3 0 0 0-3 3v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1a3 3 0 0 0-3-3h-.37A3.98 3.98 0 0 0 18 12a3.98 3.98 0 0 0-2.55-3.98c.35-.59.55-1.28.55-2.02a4 4 0 0 0-4-4z" />
+            </g>
+          </svg>
+          <span>Memory</span>
+        </button>
+
+        <button
+          className="sidebar-nav-item"
           onClick={() => onSectionChange('settings')}
           title="Settings"
         >

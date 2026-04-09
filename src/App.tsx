@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import type { Chat, UserProfile, GitHubAuth } from './types';
+import type { Chat, UserProfile, GitHubAuth, Memory } from './types';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { InputArea } from './components/InputArea';
@@ -9,7 +9,8 @@ import { ProfileSetup } from './components/ProfileSetup';
 import { Settings, loadSettings } from './components/Settings';
 import type { SettingsState } from './components/Settings';
 import { ResetPassword } from './components/ResetPassword';
-import { createNewChat, createMessage, generateChatTitle, simulateStreamingResponse } from './utils';
+import { MemoryPage } from './components/MemoryPage';
+import { createNewChat, createMessage, generateChatTitle, simulateStreamingResponse, extractMemories } from './utils';
 import { supabase } from './supabaseClient';
 import './styles/globals.css';
 import './styles/App.css';
@@ -26,6 +27,8 @@ function App() {
   const [appSettings, setAppSettings] = useState<SettingsState>(loadSettings);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [crossTabReload, setCrossTabReload] = useState(false);
+  const [memories, setMemories] = useState<Memory[]>([]);
+  const [memoryEnabled, setMemoryEnabled] = useState(true);
   const streamingResponseRef = useRef<string>('');
 
   // Apply theme, font size, and UI density to document root
@@ -82,6 +85,32 @@ function App() {
       localStorage.removeItem(`activeChat_${key}`);
     }
   }, [activeChat, userProfile]);
+
+  // Load memories when user profile changes
+  useEffect(() => {
+    if (userProfile) {
+      const key = userProfile.githubId || userProfile.email || userProfile.username || 'unknown';
+      try {
+        const saved = localStorage.getItem(`memories_${key}`);
+        if (saved) setMemories(JSON.parse(saved));
+        else setMemories([]);
+        const memEnabled = localStorage.getItem(`memoryEnabled_${key}`);
+        setMemoryEnabled(memEnabled !== 'false');
+      } catch {
+        setMemories([]);
+      }
+    } else {
+      setMemories([]);
+    }
+  }, [userProfile]);
+
+  // Save memories whenever they change
+  useEffect(() => {
+    if (userProfile) {
+      const key = userProfile.githubId || userProfile.email || userProfile.username || 'unknown';
+      localStorage.setItem(`memories_${key}`, JSON.stringify(memories));
+    }
+  }, [memories, userProfile]);
 
   // Check for existing profile on mount
   useEffect(() => {
@@ -251,6 +280,14 @@ function App() {
       setIsLoading(true);
       streamingResponseRef.current = '';
 
+      // Extract memories from user message if memory is enabled
+      if (memoryEnabled) {
+        const newMemories = extractMemories(userMessage, memories);
+        if (newMemories.length > 0) {
+          setMemories(prev => [...prev, ...newMemories]);
+        }
+      }
+
       simulateStreamingResponse(
         userMessage,
         (chunk) => {
@@ -285,7 +322,7 @@ function App() {
         }
       );
     },
-    [activeChat, chats]
+    [activeChat, chats, memoryEnabled, memories]
   );
 
   const handleNewChat = useCallback(() => {
@@ -331,6 +368,22 @@ function App() {
   const handleSectionChange = useCallback((section: string) => {
     setActiveSection(section);
   }, []);
+
+  const handleDeleteMemory = useCallback((id: string) => {
+    setMemories(prev => prev.filter(m => m.id !== id));
+  }, []);
+
+  const handleClearAllMemories = useCallback(() => {
+    setMemories([]);
+  }, []);
+
+  const handleToggleMemory = useCallback((enabled: boolean) => {
+    setMemoryEnabled(enabled);
+    if (userProfile) {
+      const key = userProfile.githubId || userProfile.email || userProfile.username || 'unknown';
+      localStorage.setItem(`memoryEnabled_${key}`, String(enabled));
+    }
+  }, [userProfile]);
 
   const handleAuthClick = useCallback(() => {
     setIsAuthModalOpen(true);
@@ -468,6 +521,15 @@ function App() {
             setChats([]);
             setActiveChat(null);
           }}
+          onBack={() => handleSectionChange('chat')}
+        />
+      ) : activeSection === 'memory' ? (
+        <MemoryPage
+          memories={memories}
+          memoryEnabled={memoryEnabled}
+          onToggleMemory={handleToggleMemory}
+          onDeleteMemory={handleDeleteMemory}
+          onClearAllMemories={handleClearAllMemories}
           onBack={() => handleSectionChange('chat')}
         />
       ) : (

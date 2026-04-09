@@ -38,3 +38,12 @@ export interface GitHubAuth {
     id: number;
   };
 }
+
+export type MemoryCategory = 'personal' | 'preferences' | 'projects' | 'goals' | 'other';
+
+export interface Memory {
+  id: string;
+  content: string;
+  category: MemoryCategory;
+  createdAt: number;
+}
