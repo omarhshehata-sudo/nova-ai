@@ -90,8 +90,9 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
 
     // Capture current input as the base text before dictation starts
     dictationBaseRef.current = input.endsWith(' ') || input === '' ? input : input + ' ';
+
     let finalTranscript = '';
-    // (buffer removed)
+    let lastInterim = '';
 
     recognition.onstart = () => {
       setDictation('listening');
@@ -108,12 +109,14 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
           interim += transcript;
         }
       }
-      // buffer is not used for preview
+      lastInterim = interim;
+      // Show interim text live
+      setInput((dictationBaseRef.current + finalTranscript + interim).replace(/  +/g, ' '));
       // Reset silence timer
       if (silenceTimeout.current) clearTimeout(silenceTimeout.current);
-      silenceTimeout.current = setTimeout(() => {
-        setInput((dictationBaseRef.current + finalTranscript).replace(/  +/g, ' '));
-        // (buffer removed)
+      silenceTimeout.current = window.setTimeout(() => {
+        // On silence, stop recognition to force final result
+        if (recognitionRef.current) recognitionRef.current.stop();
       }, 4000);
     };
 
@@ -130,14 +133,16 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
       recognitionRef.current = null;
     };
 
+
     recognition.onend = () => {
+      // Always update input with the latest transcript (final + lastInterim)
+      setInput((dictationBaseRef.current + finalTranscript + lastInterim).replace(/  +/g, ' '));
       setDictation('idle');
       recognitionRef.current = null;
       if (silenceTimeout.current) {
         clearTimeout(silenceTimeout.current);
         silenceTimeout.current = null;
       }
-      // Only show error if there was a real error, not just on stop
     };
 
     recognition.start();
