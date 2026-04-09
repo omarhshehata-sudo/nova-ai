@@ -22,17 +22,29 @@ function App() {
   const [githubAuth, setGithubAuth] = useState<GitHubAuth | null>(null);
   const streamingResponseRef = useRef<string>('');
 
+  // Helper to get a storage key unique to the current user
+  const getUserStorageKey = useCallback((base: string) => {
+    if (!userProfile) return base;
+    const id = userProfile.githubId || userProfile.username || 'unknown';
+    return `${base}_${id}`;
+  }, [userProfile]);
+
   // Load saved chats when user logs in, clear when logged out
   useEffect(() => {
     if (userProfile) {
+      const key = userProfile.githubId || userProfile.username || 'unknown';
       try {
-        const saved = localStorage.getItem('chats');
+        const saved = localStorage.getItem(`chats_${key}`);
         if (saved) {
           setChats(JSON.parse(saved));
-          setActiveChat(localStorage.getItem('activeChat') || null);
+          setActiveChat(localStorage.getItem(`activeChat_${key}`) || null);
+        } else {
+          setChats([]);
+          setActiveChat(null);
         }
       } catch {
-        // ignore
+        setChats([]);
+        setActiveChat(null);
       }
     } else {
       setChats([]);
@@ -43,17 +55,19 @@ function App() {
   // Save chats to localStorage whenever they change (only if logged in)
   useEffect(() => {
     if (userProfile) {
-      localStorage.setItem('chats', JSON.stringify(chats));
+      const key = userProfile.githubId || userProfile.username || 'unknown';
+      localStorage.setItem(`chats_${key}`, JSON.stringify(chats));
     }
   }, [chats, userProfile]);
 
   // Save active chat to localStorage (only if logged in)
   useEffect(() => {
     if (!userProfile) return;
+    const key = userProfile.githubId || userProfile.username || 'unknown';
     if (activeChat) {
-      localStorage.setItem('activeChat', activeChat);
+      localStorage.setItem(`activeChat_${key}`, activeChat);
     } else {
-      localStorage.removeItem('activeChat');
+      localStorage.removeItem(`activeChat_${key}`);
     }
   }, [activeChat, userProfile]);
 
