@@ -44,6 +44,16 @@ function App() {
       if (savedAuth && !savedProfile) {
         try {
           const auth = JSON.parse(savedAuth);
+          
+          // Check for a previously saved profile by user ID
+          const previousProfile = localStorage.getItem(`userProfile_github_${auth.user.id}`);
+          if (previousProfile) {
+            const profile = JSON.parse(previousProfile) as UserProfile;
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+            setUserProfile(profile);
+            return;
+          }
+          
           console.log('Setting GitHub auth and opening profile setup');
           setGithubAuth(auth);
           setIsProfileSetupOpen(true);
@@ -159,9 +169,9 @@ function App() {
   }, []);
 
   const handleAuthSuccess = useCallback(() => {
+    // Check current session profile
     const savedProfile = localStorage.getItem('userProfile');
     if (savedProfile) {
-      // Already has a profile - just load it
       try {
         setUserProfile(JSON.parse(savedProfile));
       } catch (err) {
@@ -170,17 +180,29 @@ function App() {
       return;
     }
 
-    // No profile yet - open profile setup
+    // Check for a previously saved profile by user ID
     const savedAuth = localStorage.getItem('githubAuth');
     if (savedAuth) {
       try {
-        setGithubAuth(JSON.parse(savedAuth));
+        const auth = JSON.parse(savedAuth) as GitHubAuth;
+        setGithubAuth(auth);
+
+        // Look up profile saved from a previous session
+        const previousProfile = localStorage.getItem(`userProfile_github_${auth.user.id}`);
+        if (previousProfile) {
+          const profile = JSON.parse(previousProfile) as UserProfile;
+          localStorage.setItem('userProfile', JSON.stringify(profile));
+          setUserProfile(profile);
+          return;
+        }
       } catch (err) {
         console.error('Failed to parse auth data:', err);
       }
     } else {
       setGithubAuth({ token: '', user: { login: 'User', avatar_url: '', id: 0 } });
     }
+
+    // No saved profile found - open profile setup
     setIsProfileSetupOpen(true);
   }, []);
 
