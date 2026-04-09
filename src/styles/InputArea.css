@@ -1,0 +1,274 @@
+.input-area-chatgpt {
+  background: transparent;
+  border-top: none;
+  padding: 32px 40px 24px 40px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===== FLOATING GLASS PANEL - PREMIUM ===== */
+.input-dock-chatgpt {
+  max-width: none;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(38, 45, 61, 0.93) 0%, rgba(45, 55, 72, 0.82) 100%);
+  backdrop-filter: blur(36px);
+  -webkit-backdrop-filter: blur(36px);
+  border: 1.5px solid rgba(0, 217, 255, 0.18);
+  border-radius: 24px;
+  padding: 16px 20px;
+  transition: all 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.45),
+              inset 0 1.5px 0 rgba(255, 255, 255, 0.18),
+              inset 0 -100px 110px rgba(0, 217, 255, 0.03),
+              0 0 2px rgba(0, 217, 255, 0.1);
+  position: relative;
+  overflow: visible;
+}
+
+.input-dock-chatgpt::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.25), transparent);
+  border-radius: 24px 24px 0 0;
+  pointer-events: none;
+}
+
+.input-dock-chatgpt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 217, 255, 0.08), transparent 60%);
+  opacity: 0;
+  transition: opacity 240ms ease;
+  pointer-events: none;
+  border-radius: 24px;
+}
+
+.input-dock-chatgpt:focus-within {
+  border-color: rgba(0, 217, 255, 0.48);
+  box-shadow: 0 28px 84px rgba(0, 217, 255, 0.28),
+              inset 0 1.5px 0 rgba(255, 255, 255, 0.22),
+              inset 0 -100px 110px rgba(0, 217, 255, 0.05),
+              0 0 48px rgba(0, 217, 255, 0.15);
+  background: linear-gradient(135deg, rgba(38, 45, 61, 0.96) 0%, rgba(45, 55, 72, 0.88) 100%);
+}
+
+.input-dock-chatgpt:focus-within::after {
+  opacity: 1;
+}
+
+/* ===== INPUT FIELD WRAPPER ===== */
+.input-field-wrapper-chatgpt {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  position: relative;
+}
+
+/* ===== TEXTAREA ===== */
+.input-field-chatgpt {
+  width: 100%;
+  height: 48px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--fontFamily);
+  font-size: 16px;
+  resize: none;
+  outline: none;
+  font-weight: 400;
+  line-height: 1.6;
+  padding: 0 8px;
+  caret-color: rgba(0, 232, 255, 1);
+  transition: all 300ms ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.input-field-chatgpt::placeholder {
+  color: rgba(160, 174, 192, 0.5);
+  font-weight: 400;
+}
+
+/* ===== ICON BUTTONS ===== */
+.input-btn-chatgpt {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.input-btn-chatgpt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), transparent);
+  opacity: 0;
+  border-radius: 12px;
+  transition: opacity 240ms ease;
+  pointer-events: none;
+}
+
+.input-btn-chatgpt:hover {
+  color: rgba(0, 232, 255, 0.95);
+  background: rgba(0, 217, 255, 0.15);
+  box-shadow: 0 0 16px rgba(0, 217, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.input-btn-chatgpt:hover::before {
+  opacity: 1;
+}
+
+.input-btn-chatgpt:active {
+  transform: scale(0.96);
+}
+
+.input-btn-chatgpt:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  color: var(--text-muted);
+}
+
+.input-btn-chatgpt svg {
+  width: 20px;
+  height: 20px;
+  transition: all 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.input-btn-chatgpt:hover svg {
+  transform: scale(1.18);
+}
+
+/* ===== SEND BUTTON - PREMIUM GRADIENT ===== */
+.input-send-chatgpt {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.95) 0%, rgba(0, 232, 255, 0.9) 50%, rgba(99, 102, 241, 0.85) 100%);
+  color: #fff;
+  box-shadow: 0 10px 32px rgba(0, 217, 255, 0.45),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2),
+              0 0 20px rgba(0, 217, 255, 0.2);
+  transition: all 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.input-send-chatgpt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), transparent);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.input-send-chatgpt:hover {
+  background: linear-gradient(135deg, rgba(0, 232, 255, 1) 0%, rgba(0, 255, 255, 0.95) 50%, rgba(129, 140, 248, 0.9) 100%);
+  box-shadow: 0 14px 48px rgba(0, 217, 255, 0.55),
+              0 0 50px rgba(99, 102, 241, 0.35),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transform: translateY(-4px) scale(1.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.input-send-chatgpt:hover::before {
+  opacity: 1;
+}
+
+.input-send-chatgpt:hover svg {
+  transform: scale(1.3);
+}
+
+.input-send-chatgpt:active {
+  transform: translateY(-1px) scale(1.03);
+}
+
+.input-send-chatgpt:disabled {
+  opacity: 0.3;
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.4) 0%, rgba(75, 85, 99, 0.3) 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: not-allowed;
+  transform: none;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ===== INPUT ACTIONS ===== */
+.input-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ===== HINT TEXT ===== */
+.input-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .input-area-chatgpt {
+    padding: 12px 12px 16px 12px;
+  }
+
+  .input-container {
+    padding: 12px 12px;
+    gap: 8px;
+  }
+
+  .input-field-chatgpt {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .input-btn-chatgpt {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+
+  .input-btn-chatgpt svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .input-send-chatgpt {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+
+  .input-send-chatgpt svg {
+    width: 18px;
+    height: 18px;
+  }
+}

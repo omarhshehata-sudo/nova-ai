@@ -1,0 +1,217 @@
+.profile-setup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backgroundColor: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.profile-setup-container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 16px;
+  padding: 40px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 
+              0 0 40px rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-setup-container h2 {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.profile-setup-subtitle {
+  color: #a0aec0;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.profile-setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Profile Picture Section */
+.profile-pic-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-pic-section h3 {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profile-pic-preview {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 217, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+.profile-pic-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #00d9ff;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+}
+
+.profile-pic-options {
+  display: flex;
+  gap: 8px;
+}
+
+.pic-option {
+  flex: 1;
+  padding: 10px 12px;
+  background: rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  color: #a0aec0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pic-option:hover {
+  background: rgba(0, 217, 255, 0.15);
+  border-color: rgba(0, 217, 255, 0.5);
+  color: #e2e8f0;
+}
+
+.pic-option.active {
+  background: rgba(0, 217, 255, 0.2);
+  border-color: #00d9ff;
+  color: #00d9ff;
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.username-input {
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.username-input::placeholder {
+  color: #64748b;
+}
+
+.username-input:focus {
+  outline: none;
+  border-color: #00d9ff;
+  background: rgba(0, 217, 255, 0.05);
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.1);
+}
+
+.username-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.char-count {
+  color: #64748b;
+  font-size: 12px;
+  text-align: right;
+}
+
+/* Error Message */
+.error-message {
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 13px;
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* Button */
+.complete-profile-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #00d9ff 0%, #a855f7 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+}
+
+.complete-profile-btn:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.4), 
+              0 0 10px rgba(168, 85, 247, 0.3);
+  transform: translateY(-2px);
+}
+
+.complete-profile-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.complete-profile-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
