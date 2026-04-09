@@ -44,6 +44,7 @@ interface SettingsProps {
   onSettingsChange: (settings: SettingsState) => void;
   onLogout: () => void;
   onClearChats: () => void;
+  onClearAllData: () => void;
   onBack: () => void;
 }
 
@@ -141,10 +142,12 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   );
 }
 
-export function Settings({ userProfile, settings, onSettingsChange, onLogout, onClearChats, onBack }: SettingsProps) {
+export function Settings({ userProfile, settings, onSettingsChange, onLogout, onClearChats, onClearAllData, onBack }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<SettingsSection>('general');
   const [saved, setSaved] = useState(false);
   const [passwordResetSent, setPasswordResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showClearChatsConfirm, setShowClearChatsConfirm] = useState(false);
@@ -155,6 +158,18 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
   const initialSettings = useRef(JSON.stringify(settings));
 
   const hasUnsaved = JSON.stringify(draft) !== initialSettings.current;
+
+  // Cooldown timer for password reset
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const timer = setInterval(() => {
+      setCooldownSeconds(prev => {
+        if (prev <= 1) { clearInterval(timer); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownSeconds]);
 
   // Live-preview theme, font size, and density changes without saving
   useEffect(() => {
@@ -201,13 +216,29 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
   }, [onBack]);
 
   const handleChangePassword = useCallback(async () => {
-    if (!userProfile?.email) return;
-    const { error } = await supabase.auth.resetPasswordForEmail(userProfile.email);
-    if (!error) {
-      setPasswordResetSent(true);
-      setTimeout(() => setPasswordResetSent(false), 4000);
+    if (!userProfile?.email || resetLoading || cooldownSeconds > 0) return;
+    setResetLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(userProfile.email);
+      if (error) {
+        if (error.message.toLowerCase().includes('rate') || error.status === 429) {
+          showToast('Too many requests — please wait a minute before trying again');
+          setCooldownSeconds(60);
+        } else {
+          showToast('Something went wrong. Please try again later.');
+        }
+      } else {
+        setPasswordResetSent(true);
+        setCooldownSeconds(60);
+        showToast('Reset link sent! Check your email.');
+        setTimeout(() => setPasswordResetSent(false), 4000);
+      }
+    } catch {
+      showToast('Network error. Please check your connection.');
+    } finally {
+      setResetLoading(false);
     }
-  }, [userProfile?.email]);
+  }, [userProfile?.email, resetLoading, cooldownSeconds, showToast]);
 
   const handleResetDefaults = useCallback(() => {
     setDraft({ ...defaultSettings });
@@ -498,9 +529,9 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                           <button
                             className={`settings-change-pw-btn ${passwordResetSent ? 'settings-change-pw-btn--sent' : ''}`}
                             onClick={handleChangePassword}
-                            disabled={passwordResetSent}
+                            disabled={resetLoading || cooldownSeconds > 0}
                           >
-                            {passwordResetSent ? 'Reset link sent!' : 'Change'}
+                            {resetLoading ? 'Sending…' : passwordResetSent ? 'Reset link sent!' : cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : 'Change'}
                           </button>
                         )}
                       </div>
@@ -575,10 +606,10 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
         <ConfirmDialog
           isOpen={true}
           title="Clear All Data"
-          message="This will delete all chats, settings, and sign you out. This action cannot be undone."
+          message="This will permanently delete ALL your data — chats, memories, settings, and your profile — and sign you out. You will need to sign in again. This cannot be undone."
           confirmText="Clear Everything"
           cancelText="Cancel"
-          onConfirm={() => { setShowClearDataConfirm(false); onClearChats(); onLogout(); }}
+          onConfirm={() => { setShowClearDataConfirm(false); onClearAllData(); }}
           onCancel={() => setShowClearDataConfirm(false)}
           isDangerous
         />

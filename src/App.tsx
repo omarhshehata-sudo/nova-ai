@@ -6,7 +6,7 @@ import { InputArea } from './components/InputArea';
 import { ChatHistory } from './components/ChatHistory';
 import { AuthModal } from './components/AuthModal';
 import { ProfileSetup } from './components/ProfileSetup';
-import { Settings, loadSettings } from './components/Settings';
+import { Settings, loadSettings, defaultSettings } from './components/Settings';
 import type { SettingsState } from './components/Settings';
 import { ResetPassword } from './components/ResetPassword';
 import { MemoryPage } from './components/MemoryPage';
@@ -520,6 +520,31 @@ function App() {
           onClearChats={() => {
             setChats([]);
             setActiveChat(null);
+          }}
+          onClearAllData={async () => {
+            const key = userProfile?.githubId || userProfile?.email || userProfile?.username || 'unknown';
+            // Clear all per-user data
+            localStorage.removeItem(`chats_${key}`);
+            localStorage.removeItem(`activeChat_${key}`);
+            localStorage.removeItem(`memories_${key}`);
+            localStorage.removeItem(`memoryEnabled_${key}`);
+            if (userProfile?.githubId) localStorage.removeItem(`userProfile_github_${userProfile.githubId}`);
+            if (userProfile?.email) localStorage.removeItem(`userProfile_email_${userProfile.email}`);
+            // Clear shared keys
+            localStorage.removeItem('githubAuth');
+            localStorage.removeItem('userProfile');
+            localStorage.removeItem('novaSettings');
+            // Reset all React state
+            setChats([]);
+            setActiveChat(null);
+            setMemories([]);
+            setMemoryEnabled(true);
+            setAppSettings(defaultSettings);
+            setUserProfile(null);
+            setGithubAuth(null);
+            // Sign out from Supabase
+            await supabase.auth.signOut();
+            setActiveSection('chat');
           }}
           onBack={() => handleSectionChange('chat')}
         />
