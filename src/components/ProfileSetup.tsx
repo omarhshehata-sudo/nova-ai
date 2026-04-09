@@ -8,16 +8,16 @@ interface ProfileSetupProps {
   onComplete: (profile: UserProfile) => void;
 }
 
+const DEFAULT_AVATAR = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00d9ff"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs><circle cx="50" cy="50" r="50" fill="#1a1a2e"/><circle cx="50" cy="38" r="16" fill="url(#g)"/><path d="M20 85 Q20 62 50 62 Q80 62 80 85" fill="url(#g)"/></svg>`)}`;
+
 export const ProfileSetup: React.FC<ProfileSetupProps> = ({
   isOpen,
   githubAuth,
   onComplete,
 }) => {
   const [username, setUsername] = useState('');
-  const [profilePic, setProfilePic] = useState<string>(
-    githubAuth?.user.avatar_url || ''
-  );
-  const [useGitHubPic, setUseGitHubPic] = useState(true);
+  const [profilePic, setProfilePic] = useState<string>(DEFAULT_AVATAR);
+  const [useDefault, setUseDefault] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,15 +44,15 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
     reader.onload = (event) => {
       const result = event.target?.result as string;
       setProfilePic(result);
-      setUseGitHubPic(false);
+      setUseDefault(false);
       setError('');
     };
     reader.readAsDataURL(file);
   };
 
-  const handleUseGitHubPic = () => {
-    setProfilePic(githubAuth.user.avatar_url);
-    setUseGitHubPic(true);
+  const handleUseDefault = () => {
+    setProfilePic(DEFAULT_AVATAR);
+    setUseDefault(true);
     setError('');
   };
 
@@ -120,14 +120,14 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
             <div className="profile-pic-options">
               <button
                 type="button"
-                className={`pic-option ${useGitHubPic ? 'active' : ''}`}
-                onClick={handleUseGitHubPic}
+                className={`pic-option ${useDefault ? 'active' : ''}`}
+                onClick={handleUseDefault}
               >
-                Use GitHub Avatar
+                Use Default
               </button>
               <button
                 type="button"
-                className={`pic-option ${!useGitHubPic ? 'active' : ''}`}
+                className={`pic-option ${!useDefault ? 'active' : ''}`}
                 onClick={() => fileInputRef.current?.click()}
               >
                 Upload Custom Picture

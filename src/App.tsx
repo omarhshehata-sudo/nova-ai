@@ -163,10 +163,6 @@ function App() {
     setIsProfileSetupOpen(false);
   }, []);
 
-  // Debug: Log when component renders
-  useEffect(() => {
-    console.log('App rendered', { isProfileSetupOpen, githubAuth: !!githubAuth, userProfile: !!userProfile });
-  });
 
   return (
     <div className="app-container">
@@ -179,26 +175,6 @@ function App() {
         githubAuth={githubAuth}
         onComplete={handleProfileSetupComplete}
       />
-      {/* Debug button - remove later */}
-      {githubAuth && !userProfile && (
-        <button
-          onClick={() => setIsProfileSetupOpen(true)}
-          style={{
-            position: 'fixed',
-            top: '10px',
-            right: '10px',
-            zIndex: 9999,
-            padding: '8px 12px',
-            background: '#ff6b6b',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
-          Open Profile Setup
-        </button>
-      )}
       <Sidebar
         activeSection={activeSection}
         onSectionChange={handleSectionChange}
