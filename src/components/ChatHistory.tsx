@@ -12,6 +12,25 @@ interface ChatHistoryProps {
   onNewChat?: () => void;
 }
 
+const getPreview = (chat: Chat): string => {
+  const last = chat.messages[chat.messages.length - 1];
+  if (!last) return 'Empty conversation';
+  const text = last.content.replace(/\n+/g, ' ').trim();
+  return text.length > 60 ? text.slice(0, 60) + '…' : text;
+};
+
+const formatRelative = (ts: number): string => {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+};
+
 export const ChatHistory: React.FC<ChatHistoryProps> = ({
   chats,
   activeChat,
@@ -75,7 +94,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
         <div className="chat-history-search-chatgpt">
           <input
             type="text"
-            placeholder="Search chats..."
+            placeholder="Search conversations…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="chat-search-input-chatgpt"
@@ -85,18 +104,34 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
       )}
       <div className="chat-history-list-chatgpt">
         {filteredChats.length === 0 ? (
-          <p className="no-chats-chatgpt">
-            {chats.length === 0 ? 'No conversations yet' : 'No chats found'}
-          </p>
+          <div className="no-chats-chatgpt">
+            <div className="no-chats-icon-wrapper">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </div>
+            <p className="no-chats-title">
+              {chats.length === 0 ? 'No conversations yet' : 'No results found'}
+            </p>
+            <p className="no-chats-subtitle">
+              {chats.length === 0 ? 'Start a new chat to begin exploring' : 'Try a different search term'}
+            </p>
+          </div>
         ) : (
-          filteredChats.map((chat) => (
+          filteredChats.map((chat, index) => (
             <div
               key={chat.id}
               className={`chat-history-item-chatgpt ${activeChat === chat.id ? 'active' : ''}`}
               onClick={() => onSelectChat(chat.id)}
+              style={{ animationDelay: `${index * 30}ms` }}
             >
+              <div className="chat-item-accent" />
               <div className="chat-item-content-chatgpt">
-                <p className="chat-item-title-chatgpt">{chat.title}</p>
+                <div className="chat-item-top-row">
+                  <p className="chat-item-title-chatgpt">{chat.title}</p>
+                  <span className="chat-item-time">{formatRelative(chat.updatedAt)}</span>
+                </div>
+                <p className="chat-item-preview">{getPreview(chat)}</p>
               </div>
               {onDeleteChat && (
                 <button
