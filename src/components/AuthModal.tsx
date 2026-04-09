@@ -112,14 +112,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
       return;
     }
 
-    setSuccessMessage(`Logged in as ${email}`);
-    setTimeout(() => {
-      onClose();
-      onAuthSuccess?.();
-      setEmail('');
-      setPassword('');
-      setStep('choice');
-    }, 1000);
+    onClose();
+    onAuthSuccess?.();
+    setEmail('');
+    setPassword('');
+    setStep('choice');
   };
 
   // Signup with email handler
