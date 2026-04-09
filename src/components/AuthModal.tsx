@@ -28,14 +28,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     if (token) {
       try {
         const authData = JSON.parse(atob(token));
-        setSuccessMessage(`Logged in as ${authData.user.login}`);
         
-        // Store auth data (in production, use secure session storage)
+        // Store auth data
         localStorage.setItem('githubAuth', JSON.stringify(authData));
         
+        // Check if user already has a profile
+        const existingProfile = localStorage.getItem('userProfile');
+        if (existingProfile) {
+          // Already set up - just log them in
+          setSuccessMessage(`Welcome back!`);
+        } else {
+          setSuccessMessage(`Logged in as ${authData.user.login}`);
+        }
+        
         setTimeout(() => {
-          onClose();
           window.history.replaceState({}, document.title, window.location.pathname);
+          onClose();
+          onAuthSuccess?.();
           setEmail('');
           setPassword('');
           setStep('choice');

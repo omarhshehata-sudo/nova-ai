@@ -160,12 +160,28 @@ function App() {
 
   const handleAuthSuccess = useCallback(() => {
     const savedProfile = localStorage.getItem('userProfile');
-    if (!savedProfile) {
-      // No profile yet - open profile setup
-      // Use a placeholder githubAuth for email users
-      setGithubAuth({ token: '', user: { login: 'User', avatar_url: '', id: 0 } });
-      setIsProfileSetupOpen(true);
+    if (savedProfile) {
+      // Already has a profile - just load it
+      try {
+        setUserProfile(JSON.parse(savedProfile));
+      } catch (err) {
+        console.error('Failed to parse saved profile:', err);
+      }
+      return;
     }
+
+    // No profile yet - open profile setup
+    const savedAuth = localStorage.getItem('githubAuth');
+    if (savedAuth) {
+      try {
+        setGithubAuth(JSON.parse(savedAuth));
+      } catch (err) {
+        console.error('Failed to parse auth data:', err);
+      }
+    } else {
+      setGithubAuth({ token: '', user: { login: 'User', avatar_url: '', id: 0 } });
+    }
+    setIsProfileSetupOpen(true);
   }, []);
 
   const handleProfileSetupComplete = useCallback((profile: UserProfile) => {
