@@ -254,10 +254,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   return (
     <div className="auth-modal-overlay" onClick={onClose}>
       <div className="auth-modal-container" onClick={(e) => e.stopPropagation()}>
-        <button className="auth-modal-close" onClick={onClose}>×</button>
+        {/* Gradient accent line */}
+        <div className="auth-modal-accent" />
+        
+        {/* Close button */}
+        <button className="auth-modal-close" onClick={onClose}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M1 1l12 12M13 1L1 13" />
+          </svg>
+        </button>
 
         {step === 'choice' && (
           <div className="auth-step">
+            {/* Nova branding */}
+            <div className="auth-brand-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="authNovaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#00d9ff" />
+                    <stop offset="100%" stopColor="#a855f7" />
+                  </linearGradient>
+                </defs>
+                <circle cx="12" cy="12" r="10.5" stroke="url(#authNovaGrad)" strokeWidth="1.2" opacity="0.8" />
+                <path d="M 7 18 L 7 6 M 7 6 L 17 18 M 17 18 L 17 6" stroke="url(#authNovaGrad)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
             <h2>Welcome to Nova AI</h2>
             <p>Choose how you'd like to continue</p>
             <div className="auth-buttons">
@@ -265,12 +286,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 className="auth-button auth-button-primary"
                 onClick={() => setStep('login')}
               >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
                 <span>Sign In</span>
               </button>
               <button
                 className="auth-button auth-button-secondary"
                 onClick={() => setStep('signup-method')}
               >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="8.5" cy="7" r="4" />
+                  <line x1="20" y1="8" x2="20" y2="14" />
+                  <line x1="23" y1="11" x2="17" y2="11" />
+                </svg>
                 <span>Create Account</span>
               </button>
             </div>
