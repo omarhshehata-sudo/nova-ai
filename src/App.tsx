@@ -158,6 +158,16 @@ function App() {
     setIsAuthModalOpen(true);
   }, []);
 
+  const handleAuthSuccess = useCallback(() => {
+    const savedProfile = localStorage.getItem('userProfile');
+    if (!savedProfile) {
+      // No profile yet - open profile setup
+      // Use a placeholder githubAuth for email users
+      setGithubAuth({ token: '', user: { login: 'User', avatar_url: '', id: 0 } });
+      setIsProfileSetupOpen(true);
+    }
+  }, []);
+
   const handleProfileSetupComplete = useCallback((profile: UserProfile) => {
     setUserProfile(profile);
     setIsProfileSetupOpen(false);
@@ -169,6 +179,7 @@ function App() {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
       />
       <ProfileSetup
         isOpen={isProfileSetupOpen}

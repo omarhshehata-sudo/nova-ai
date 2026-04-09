@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import '../styles/AuthModal.css';
 import { IconAppleWhite } from './Icons';
+import { supabase } from '../supabaseClient';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAuthSuccess?: () => void;
 }
 
 type AuthStep = 'choice' | 'login' | 'signup-method' | 'signup-email' | 'forgot-password';
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess }) => {
   const [step, setStep] = useState<AuthStep>('choice');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -59,7 +61,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   };
 
   // Login handler
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
@@ -75,21 +77,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
 
     setLoading(true);
-    // Simulate API call
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    setLoading(false);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    setSuccessMessage(`Logged in as ${email}`);
     setTimeout(() => {
-      setLoading(false);
-      setSuccessMessage(`Logged in as ${email}`);
-      setTimeout(() => {
-        onClose();
-        setEmail('');
-        setPassword('');
-        setStep('choice');
-      }, 1500);
+      onClose();
+      onAuthSuccess?.();
+      setEmail('');
+      setPassword('');
+      setStep('choice');
     }, 1000);
   };
 
   // Signup with email handler
-  const handleSignupEmail = (e: React.FormEvent) => {
+  const handleSignupEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
@@ -115,22 +126,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
 
     setLoading(true);
-    // Simulate API call
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    setLoading(false);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    setSuccessMessage('Check your email to confirm your account!');
     setTimeout(() => {
-      setLoading(false);
-      setSuccessMessage(`Account created for ${email}`);
-      setTimeout(() => {
-        onClose();
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        setStep('choice');
-      }, 1500);
-    }, 1000);
+      setStep('login');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+    }, 3000);
   };
 
   // Password reset handler
-  const handlePasswordReset = (e: React.FormEvent) => {
+  const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
@@ -146,15 +164,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
 
     setLoading(true);
-    // Simulate API call
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+    setLoading(false);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    setSuccessMessage('Password reset link sent to ' + email);
     setTimeout(() => {
-      setLoading(false);
-      setSuccessMessage('Password reset link sent to ' + email);
-      setTimeout(() => {
-        setStep('login');
-        setEmail('');
-      }, 2000);
-    }, 1000);
+      setStep('login');
+      setEmail('');
+    }, 2000);
   };
 
   // OAuth handlers

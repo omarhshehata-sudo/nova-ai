@@ -189,7 +189,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
       <div className="profile-setup-container">
         <h2>Complete Your Profile</h2>
         <p className="profile-setup-subtitle">
-          Welcome, {githubAuth.user.login}! Let's set up your profile.
+          Welcome! Let's set up your profile.
         </p>
 
         <form onSubmit={handleComplete} className="profile-setup-form">
