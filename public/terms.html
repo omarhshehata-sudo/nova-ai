@@ -17,7 +17,6 @@
       overflow-x:hidden;
     }
 
-    /* Animated background orbs */
     .bg-orbs{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
     .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;animation:float 20s ease-in-out infinite}
     .orb-1{width:450px;height:450px;background:radial-gradient(circle,#a855f7,transparent 70%);top:-8%;right:-5%;animation-delay:0s}
@@ -25,23 +24,20 @@
     .orb-3{width:350px;height:350px;background:radial-gradient(circle,#00d9ff,transparent 70%);top:50%;right:30%;animation-delay:-15s}
     @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,30px) scale(.95)}}
 
-    /* Grid pattern overlay */
     .bg-grid{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
 
-    .page{position:relative;z-index:1;max-width:740px;margin:0 auto;padding:4rem 1.5rem 6rem}
+    .page{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:4rem 1.5rem 6rem}
 
-    /* Back link */
     .back{display:inline-flex;align-items:center;gap:.5rem;color:#00d9ff;text-decoration:none;font-size:.88rem;font-weight:500;margin-bottom:2.5rem;padding:.5rem .9rem;border-radius:10px;background:rgba(0,217,255,.06);border:1px solid rgba(0,217,255,.12);backdrop-filter:blur(8px);transition:all .3s ease}
     .back:hover{background:rgba(0,217,255,.12);border-color:rgba(0,217,255,.3);transform:translateX(-3px)}
     .back svg{width:15px;height:15px}
 
-    /* Header */
     .header{text-align:center;margin-bottom:3.5rem}
     .badge{display:inline-block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#6366f1;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);border-radius:100px;padding:.3rem 1rem;margin-bottom:1.2rem;backdrop-filter:blur(8px)}
     h1{font-size:2.6rem;font-weight:800;margin-bottom:.6rem;background:linear-gradient(135deg,#00d9ff 0%,#6366f1 40%,#a855f7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em}
     .subtitle{color:#5a6578;font-size:.88rem;font-weight:400}
+    .effective{color:#4a5568;font-size:.8rem;margin-top:.4rem}
 
-    /* Glass cards */
     .card{
       position:relative;
       background:rgba(22,28,45,.55);
@@ -64,7 +60,7 @@
       box-shadow:0 8px 32px rgba(0,0,0,.3),0 0 60px rgba(99,102,241,.06);
     }
 
-    .card h2{font-size:1.1rem;font-weight:650;color:#f0f2f5;margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem}
+    .card h2{font-size:1.15rem;font-weight:650;color:#f0f2f5;margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem}
     .card h2 .icon{
       width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;
       backdrop-filter:blur(8px);
@@ -75,36 +71,43 @@
     .icon-green{background:rgba(72,187,120,.1);border:1px solid rgba(72,187,120,.18)}
     .icon-orange{background:rgba(237,137,54,.1);border:1px solid rgba(237,137,54,.18)}
     .icon-red{background:rgba(245,101,101,.1);border:1px solid rgba(245,101,101,.18)}
+    .icon-teal{background:rgba(56,178,172,.1);border:1px solid rgba(56,178,172,.18)}
+    .icon-pink{background:rgba(237,100,166,.1);border:1px solid rgba(237,100,166,.18)}
     .icon-yellow{background:rgba(236,201,75,.1);border:1px solid rgba(236,201,75,.18)}
 
-    .card p,.card li{color:#94a3b8;font-size:.9rem;line-height:1.75}
+    .card h3{font-size:.95rem;font-weight:600;color:#cbd5e1;margin:1rem 0 .5rem}
+    .card p,.card li{color:#94a3b8;font-size:.9rem;line-height:1.8}
     .card ul{padding-left:1.25rem;margin-top:.5rem}
     .card li{margin-bottom:.4rem}
     .card li::marker{color:rgba(99,102,241,.5)}
     .card strong{color:#cbd5e1;font-weight:600}
     .card a{color:#00d9ff;text-decoration:none;border-bottom:1px solid rgba(0,217,255,.2);transition:border-color .2s}
     .card a:hover{border-color:#00d9ff}
+    .card .highlight{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);border-radius:10px;padding:.75rem 1rem;margin:.75rem 0;font-size:.87rem;color:#a0aec0}
+    .card .warning{background:rgba(237,137,54,.08);border:1px solid rgba(237,137,54,.15);border-radius:10px;padding:.75rem 1rem;margin:.75rem 0;font-size:.87rem;color:#a0aec0}
 
-    /* Divider line */
     .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.2),rgba(99,102,241,.2),transparent);margin:2.5rem 0;border:none}
 
-    /* Footer */
     .footer{text-align:center;color:#3d4556;font-size:.8rem;margin-top:3rem;padding-top:2rem}
     .footer a{color:#6366f1;text-decoration:none;transition:color .2s}
     .footer a:hover{color:#818cf8}
     .footer .links{display:flex;justify-content:center;gap:1.5rem;margin-top:.6rem}
     .footer .sep{color:#2d3748}
 
-    /* Scroll animation */
     .card{opacity:0;transform:translateY(20px);animation:fadeUp .6s ease forwards}
     .card:nth-child(1){animation-delay:.05s}
-    .card:nth-child(2){animation-delay:.1s}
-    .card:nth-child(3){animation-delay:.15s}
-    .card:nth-child(4){animation-delay:.2s}
-    .card:nth-child(5){animation-delay:.25s}
-    .card:nth-child(6){animation-delay:.3s}
-    .card:nth-child(7){animation-delay:.35s}
-    .card:nth-child(8){animation-delay:.4s}
+    .card:nth-child(2){animation-delay:.08s}
+    .card:nth-child(3){animation-delay:.11s}
+    .card:nth-child(4){animation-delay:.14s}
+    .card:nth-child(5){animation-delay:.17s}
+    .card:nth-child(6){animation-delay:.2s}
+    .card:nth-child(7){animation-delay:.23s}
+    .card:nth-child(8){animation-delay:.26s}
+    .card:nth-child(9){animation-delay:.29s}
+    .card:nth-child(10){animation-delay:.32s}
+    .card:nth-child(11){animation-delay:.35s}
+    .card:nth-child(12){animation-delay:.38s}
+    .card:nth-child(13){animation-delay:.41s}
     @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 
     @media(max-width:600px){
@@ -129,81 +132,194 @@
     </a>
 
     <div class="header">
-      <div class="badge">Legal</div>
+      <div class="badge">Terms of Service</div>
       <h1>Terms of Service</h1>
-      <p class="subtitle">Last updated — April 9, 2026</p>
+      <p class="subtitle">Please read these terms carefully before using Nova AI. By accessing our Service, you agree to be bound by these terms.</p>
+      <p class="effective">Effective date: April 9, 2026 &middot; Last updated: April 9, 2026</p>
     </div>
 
+    <!-- 1. Acceptance of Terms -->
     <div class="card">
-      <h2><span class="icon icon-blue">📄</span> Agreement</h2>
-      <p>By accessing or using Nova AI ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, please do not use the Service.</p>
+      <h2><span class="icon icon-blue">📄</span> 1. Acceptance of Terms</h2>
+      <p>By accessing or using Nova AI (the "Service"), available at <strong>nova-ai-blue.vercel.app</strong>, you agree to be bound by these Terms of Service ("Terms"). These Terms constitute a legally binding agreement between you ("User," "you," or "your") and Nova AI ("we," "us," or "our").</p>
+      <p style="margin-top:.6rem">If you do not agree to all of these Terms, you must not access or use the Service. If you are using the Service on behalf of an organization, you represent and warrant that you have the authority to bind that organization to these Terms.</p>
     </div>
 
+    <!-- 2. Description of Service -->
     <div class="card">
-      <h2><span class="icon icon-cyan">💡</span> Description of Service</h2>
-      <p>Nova AI is an AI-powered chat assistant that provides instant answers and helps you explore ideas. The Service is provided "as is" and may be updated, modified, or discontinued at any time.</p>
-    </div>
-
-    <div class="card">
-      <h2><span class="icon icon-green">👤</span> Your Account</h2>
+      <h2><span class="icon icon-cyan">💡</span> 2. Description of Service</h2>
+      <p>Nova AI is an AI-powered chat platform that allows users to interact with artificial intelligence models to receive responses, explore ideas, and generate content. The Service includes:</p>
       <ul>
-        <li>You may sign in using email, GitHub, or Google authentication</li>
-        <li>You are responsible for maintaining the security of your account</li>
-        <li>You must provide accurate information when creating your profile</li>
-        <li>You must be at least 13 years old to use the Service</li>
+        <li>AI chat functionality powered by language models</li>
+        <li>User account creation and management</li>
+        <li>Conversation history stored locally in your browser</li>
+        <li>Profile customization features</li>
       </ul>
+      <p style="margin-top:.6rem">The Service is provided on an "as-is" and "as-available" basis. We reserve the right to modify, suspend, or discontinue any part of the Service at any time, with or without notice.</p>
+    </div>
+
+    <!-- 3. User Accounts -->
+    <div class="card">
+      <h2><span class="icon icon-green">👤</span> 3. User Accounts and Responsibilities</h2>
+      <p>To use certain features of the Service, you must create an account. When creating and maintaining your account, you agree to:</p>
+      <ul>
+        <li><strong>Provide accurate information</strong> — you must provide truthful and current information during registration</li>
+        <li><strong>Maintain account security</strong> — you are solely responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account</li>
+        <li><strong>Age requirement</strong> — you must be at least 13 years of age (or the age of digital consent in your jurisdiction) to create an account and use the Service</li>
+        <li><strong>One person per account</strong> — accounts are for individual use and may not be shared with or transferred to other persons</li>
+        <li><strong>Prompt notification</strong> — you must notify us immediately of any unauthorized use of your account or any other security breach</li>
+      </ul>
+      <p style="margin-top:.6rem">We reserve the right to refuse service, terminate accounts, or restrict access at our sole discretion.</p>
+    </div>
+
+    <!-- 4. Acceptable Use -->
+    <div class="card">
+      <h2><span class="icon icon-purple">✅</span> 4. Acceptable Use Policy</h2>
+      <p>You agree to use the Service only for lawful purposes and in accordance with these Terms. You expressly agree <strong>not</strong> to:</p>
+      <ul>
+        <li>Use the Service for any illegal, fraudulent, or unauthorized purpose</li>
+        <li>Attempt to gain unauthorized access to any part of the Service, other accounts, computer systems, or networks connected to the Service</li>
+        <li>Interfere with, disrupt, or create an undue burden on the Service or the networks and servers connected to it</li>
+        <li>Upload, transmit, or distribute any malicious code, viruses, malware, or other harmful technology</li>
+        <li>Use the Service to generate content that is illegal, harmful, threatening, abusive, harassing, defamatory, obscene, or otherwise objectionable</li>
+        <li>Impersonate any person or entity, or falsely state or misrepresent your affiliation with a person or entity</li>
+        <li>Use automated scripts, bots, or other means to access the Service without our express written permission</li>
+        <li>Attempt to reverse-engineer, decompile, or extract the source code of the Service</li>
+        <li>Use the Service to develop competing products or services</li>
+        <li>Circumvent any rate limiting, access controls, or security measures implemented by us</li>
+      </ul>
+      <p style="margin-top:.6rem">Violation of this Acceptable Use Policy may result in immediate suspension or termination of your account without prior notice.</p>
     </div>
 
     <hr class="divider" />
 
+    <!-- 5. AI Limitations -->
     <div class="card">
-      <h2><span class="icon icon-purple">✅</span> Acceptable Use</h2>
-      <p>You agree not to:</p>
+      <h2><span class="icon icon-orange">🤖</span> 5. AI-Generated Content and Limitations</h2>
+      <div class="warning">
+        <strong>Important Disclaimer:</strong> AI-generated responses may be inaccurate, incomplete, misleading, or outdated. You should not rely solely on AI output for making important decisions.
+      </div>
+      <p>By using the Service, you acknowledge and agree that:</p>
       <ul>
-        <li>Use the Service for any illegal or unauthorized purpose</li>
-        <li>Attempt to gain unauthorized access to any part of the Service</li>
-        <li>Interfere with or disrupt the Service or its infrastructure</li>
-        <li>Transmit malicious code, spam, or harmful content</li>
-        <li>Impersonate others or misrepresent your identity</li>
+        <li>AI responses are generated by machine learning models and <strong>do not constitute professional advice</strong> of any kind — including but not limited to legal, medical, financial, or technical advice</li>
+        <li>AI output may contain <strong>errors, inaccuracies, or "hallucinations"</strong> — information that appears plausible but is factually incorrect</li>
+        <li>You are solely responsible for <strong>evaluating and verifying</strong> any information provided by the AI before acting on it</li>
+        <li>AI responses do not reflect the opinions, views, or endorsements of Nova AI</li>
+        <li>The AI may produce different responses to the same prompt and <strong>cannot guarantee consistency</strong></li>
+        <li>You should <strong>not input sensitive personal information</strong> (such as passwords, financial account numbers, Social Security numbers, or private health information) into the AI chat</li>
+        <li>We are <strong>not responsible for any decisions, actions, or consequences</strong> resulting from your reliance on AI-generated content</li>
       </ul>
     </div>
 
+    <!-- 6. Intellectual Property -->
     <div class="card">
-      <h2><span class="icon icon-orange">💬</span> Content &amp; Data</h2>
-      <ul>
-        <li>Your chat conversations are stored locally in your browser — you retain full ownership</li>
-        <li>AI-generated responses are provided for informational purposes and may not always be accurate</li>
-        <li>You should not rely on AI responses for critical decisions without independent verification</li>
-      </ul>
+      <h2><span class="icon icon-teal">©️</span> 6. Intellectual Property</h2>
+      <h3>Our Property</h3>
+      <p>The Service, including its original content, features, functionality, design, branding, source code, and underlying technology, is and will remain the exclusive property of Nova AI and its licensors. The Service is protected by copyright, trademark, trade secret, and other intellectual property laws. Our trademarks and trade dress may not be used without our prior written consent.</p>
+
+      <h3>Your Content</h3>
+      <p>You retain ownership of the content you create and submit through the Service (including messages and prompts). By using the Service, you grant us a limited, non-exclusive license to process your inputs solely for the purpose of generating AI responses and providing the Service to you.</p>
+
+      <h3>AI Output</h3>
+      <p>To the extent permitted by applicable law, you may use AI-generated responses for your personal or business purposes. However, you acknowledge that similar or identical output may be generated for other users, and Nova AI does not claim ownership of or guarantee exclusivity over AI-generated content.</p>
     </div>
 
+    <!-- 7. Termination -->
     <div class="card">
-      <h2><span class="icon icon-yellow">⚠️</span> Disclaimers</h2>
+      <h2><span class="icon icon-red">🚫</span> 7. Termination</h2>
+      <p>We reserve the right to suspend, disable, or terminate your account and access to the Service at any time, with or without cause, and with or without notice, including but not limited to:</p>
       <ul>
-        <li>The Service is provided "as is" without warranties of any kind</li>
-        <li>We do not guarantee uninterrupted or error-free operation</li>
-        <li>AI responses may contain inaccuracies — use your own judgment</li>
-        <li>We are not liable for any damages arising from use of the Service</li>
+        <li>Violation of these Terms or the Acceptable Use Policy</li>
+        <li>Conduct that we determine, in our sole discretion, is harmful to other users, us, or third parties</li>
+        <li>Suspected fraudulent, abusive, or illegal activity</li>
+        <li>Extended periods of inactivity</li>
+        <li>Requests by law enforcement or government agencies</li>
       </ul>
+      <p style="margin-top:.6rem">You may terminate your account at any time by discontinuing use of the Service and clearing your local data. Upon termination, your right to use the Service will immediately cease. Provisions of these Terms that by their nature should survive termination shall survive, including but not limited to intellectual property provisions, disclaimers, indemnification, and limitations of liability.</p>
+    </div>
+
+    <!-- 8. Limitation of Liability -->
+    <div class="card">
+      <h2><span class="icon icon-yellow">⚖️</span> 8. Limitation of Liability</h2>
+      <div class="highlight">
+        To the maximum extent permitted by applicable law, Nova AI and its officers, directors, employees, agents, suppliers, and licensors shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, use, goodwill, or other intangible losses.
+      </div>
+      <p>This limitation applies regardless of whether the damages arise from:</p>
+      <ul>
+        <li>Your use of or inability to use the Service</li>
+        <li>Any content obtained from the Service, including AI-generated responses</li>
+        <li>Unauthorized access to or alteration of your data or transmissions</li>
+        <li>Statements or conduct of any third party on the Service</li>
+        <li>Any other matter relating to the Service</li>
+      </ul>
+      <p style="margin-top:.6rem">In no event shall our total aggregate liability exceed the amount you paid us (if any) in the twelve (12) months preceding the claim, or one hundred US dollars ($100), whichever is greater.</p>
     </div>
 
     <hr class="divider" />
 
+    <!-- 9. Disclaimer of Warranties -->
     <div class="card">
-      <h2><span class="icon icon-red">🔄</span> Changes to Terms</h2>
-      <p>We may update these terms from time to time. Continued use of the Service after changes constitutes acceptance of the new terms. We encourage you to review this page periodically.</p>
+      <h2><span class="icon icon-orange">⚠️</span> 9. Disclaimer of Warranties</h2>
+      <p>The Service is provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis, without warranties of any kind, either express or implied. To the fullest extent permissible under applicable law, we disclaim all warranties, including but not limited to:</p>
+      <ul>
+        <li>Implied warranties of merchantability, fitness for a particular purpose, and non-infringement</li>
+        <li>That the Service will be uninterrupted, timely, secure, or error-free</li>
+        <li>That the results obtained from using the Service will be accurate, reliable, or complete</li>
+        <li>That any errors in the Service will be corrected</li>
+        <li>That the Service is free of viruses or other harmful components</li>
+      </ul>
+      <p style="margin-top:.6rem">You use the Service at your sole risk. No advice or information, whether oral or written, obtained from us or through the Service shall create any warranty not expressly made herein.</p>
     </div>
 
+    <!-- 10. Indemnification -->
     <div class="card">
-      <h2><span class="icon icon-blue">✉️</span> Contact</h2>
-      <p>Questions about these terms? Reach out through our GitHub repository at <a href="https://github.com/omarhshehata-sudo/nova-ai">github.com/omarhshehata-sudo/nova-ai</a>.</p>
+      <h2><span class="icon icon-purple">🛡️</span> 10. Indemnification</h2>
+      <p>You agree to defend, indemnify, and hold harmless Nova AI and its officers, directors, employees, contractors, agents, licensors, and suppliers from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys' fees) arising out of or relating to:</p>
+      <ul>
+        <li>Your violation of these Terms</li>
+        <li>Your use of the Service</li>
+        <li>Your violation of any third-party rights, including intellectual property rights</li>
+        <li>Any content you submit, post, or transmit through the Service</li>
+        <li>Any action taken by you based on AI-generated content</li>
+      </ul>
+    </div>
+
+    <!-- 11. Changes to Terms -->
+    <div class="card">
+      <h2><span class="icon icon-cyan">🔄</span> 11. Changes to These Terms</h2>
+      <p>We reserve the right to modify or replace these Terms at any time at our sole discretion. When we make changes:</p>
+      <ul>
+        <li>We will update the "Last updated" date at the top of this page</li>
+        <li>For material changes, we may provide additional notice through the Service or via email</li>
+        <li>Your continued use of the Service after any changes become effective constitutes your acceptance of the revised Terms</li>
+      </ul>
+      <p style="margin-top:.6rem">If you do not agree to the new Terms, you must stop using the Service. It is your responsibility to review these Terms periodically.</p>
+    </div>
+
+    <!-- 12. Governing Law -->
+    <div class="card">
+      <h2><span class="icon icon-green">🏛️</span> 12. Governing Law and Disputes</h2>
+      <p>These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which Nova AI operates, without regard to conflict of law principles.</p>
+      <p style="margin-top:.6rem">Any disputes arising out of or relating to these Terms or the Service shall first be attempted to be resolved through good-faith negotiation. If a dispute cannot be resolved through negotiation within thirty (30) days, either party may pursue resolution through the appropriate courts of competent jurisdiction.</p>
+      <p style="margin-top:.6rem">You agree that any claim or cause of action arising out of or related to the Service must be filed within one (1) year after such claim or cause of action arose, or be forever barred.</p>
+    </div>
+
+    <!-- 13. Contact -->
+    <div class="card">
+      <h2><span class="icon icon-blue">✉️</span> 13. Contact Information</h2>
+      <p>If you have any questions, concerns, or feedback about these Terms of Service, please contact us:</p>
+      <ul>
+        <li><strong>GitHub</strong> — <a href="https://github.com/omarhshehata-sudo/nova-ai" target="_blank">github.com/omarhshehata-sudo/nova-ai</a></li>
+        <li><strong>Platform</strong> — <a href="https://nova-ai-blue.vercel.app" target="_blank">nova-ai-blue.vercel.app</a></li>
+      </ul>
+      <p style="margin-top:.6rem">We aim to respond to all inquiries within a reasonable timeframe.</p>
     </div>
 
     <div class="footer">
-      <p>© 2026 Nova AI</p>
+      <p>&copy; 2026 Nova AI. All rights reserved.</p>
       <div class="links">
         <a href="/terms">Terms of Service</a>
-        <span class="sep">·</span>
+        <span class="sep">&middot;</span>
         <a href="/privacy">Privacy Policy</a>
       </div>
     </div>

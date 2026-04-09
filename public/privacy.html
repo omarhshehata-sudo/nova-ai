@@ -17,7 +17,6 @@
       overflow-x:hidden;
     }
 
-    /* Animated background orbs */
     .bg-orbs{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
     .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;animation:float 20s ease-in-out infinite}
     .orb-1{width:500px;height:500px;background:radial-gradient(circle,#6366f1,transparent 70%);top:-10%;left:-10%;animation-delay:0s}
@@ -25,23 +24,20 @@
     .orb-3{width:350px;height:350px;background:radial-gradient(circle,#a855f7,transparent 70%);bottom:-5%;left:20%;animation-delay:-14s}
     @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,30px) scale(.95)}}
 
-    /* Grid pattern overlay */
     .bg-grid{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
 
-    .page{position:relative;z-index:1;max-width:740px;margin:0 auto;padding:4rem 1.5rem 6rem}
+    .page{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:4rem 1.5rem 6rem}
 
-    /* Back link */
     .back{display:inline-flex;align-items:center;gap:.5rem;color:#00d9ff;text-decoration:none;font-size:.88rem;font-weight:500;margin-bottom:2.5rem;padding:.5rem .9rem;border-radius:10px;background:rgba(0,217,255,.06);border:1px solid rgba(0,217,255,.12);backdrop-filter:blur(8px);transition:all .3s ease}
     .back:hover{background:rgba(0,217,255,.12);border-color:rgba(0,217,255,.3);transform:translateX(-3px)}
     .back svg{width:15px;height:15px}
 
-    /* Header */
     .header{text-align:center;margin-bottom:3.5rem}
     .badge{display:inline-block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#a855f7;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:100px;padding:.3rem 1rem;margin-bottom:1.2rem;backdrop-filter:blur(8px)}
     h1{font-size:2.6rem;font-weight:800;margin-bottom:.6rem;background:linear-gradient(135deg,#00d9ff 0%,#6366f1 40%,#a855f7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em}
     .subtitle{color:#5a6578;font-size:.88rem;font-weight:400}
+    .effective{color:#4a5568;font-size:.8rem;margin-top:.4rem}
 
-    /* Glass cards */
     .card{
       position:relative;
       background:rgba(22,28,45,.55);
@@ -64,7 +60,7 @@
       box-shadow:0 8px 32px rgba(0,0,0,.3),0 0 60px rgba(99,102,241,.06);
     }
 
-    .card h2{font-size:1.1rem;font-weight:650;color:#f0f2f5;margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem}
+    .card h2{font-size:1.15rem;font-weight:650;color:#f0f2f5;margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem}
     .card h2 .icon{
       width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;
       backdrop-filter:blur(8px);
@@ -75,34 +71,42 @@
     .icon-green{background:rgba(72,187,120,.1);border:1px solid rgba(72,187,120,.18)}
     .icon-orange{background:rgba(237,137,54,.1);border:1px solid rgba(237,137,54,.18)}
     .icon-red{background:rgba(245,101,101,.1);border:1px solid rgba(245,101,101,.18)}
+    .icon-teal{background:rgba(56,178,172,.1);border:1px solid rgba(56,178,172,.18)}
+    .icon-pink{background:rgba(237,100,166,.1);border:1px solid rgba(237,100,166,.18)}
+    .icon-yellow{background:rgba(236,201,75,.1);border:1px solid rgba(236,201,75,.18)}
 
-    .card p,.card li{color:#94a3b8;font-size:.9rem;line-height:1.75}
+    .card h3{font-size:.95rem;font-weight:600;color:#cbd5e1;margin:1rem 0 .5rem}
+    .card p,.card li{color:#94a3b8;font-size:.9rem;line-height:1.8}
     .card ul{padding-left:1.25rem;margin-top:.5rem}
     .card li{margin-bottom:.4rem}
     .card li::marker{color:rgba(99,102,241,.5)}
     .card strong{color:#cbd5e1;font-weight:600}
     .card a{color:#00d9ff;text-decoration:none;border-bottom:1px solid rgba(0,217,255,.2);transition:border-color .2s}
     .card a:hover{border-color:#00d9ff}
+    .card .highlight{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);border-radius:10px;padding:.75rem 1rem;margin:.75rem 0;font-size:.87rem;color:#a0aec0}
 
-    /* Divider line */
     .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.2),rgba(168,85,247,.2),transparent);margin:2.5rem 0;border:none}
 
-    /* Footer */
     .footer{text-align:center;color:#3d4556;font-size:.8rem;margin-top:3rem;padding-top:2rem}
     .footer a{color:#6366f1;text-decoration:none;transition:color .2s}
     .footer a:hover{color:#818cf8}
     .footer .links{display:flex;justify-content:center;gap:1.5rem;margin-top:.6rem}
     .footer .sep{color:#2d3748}
 
-    /* Scroll animation */
     .card{opacity:0;transform:translateY(20px);animation:fadeUp .6s ease forwards}
     .card:nth-child(1){animation-delay:.05s}
-    .card:nth-child(2){animation-delay:.1s}
-    .card:nth-child(3){animation-delay:.15s}
-    .card:nth-child(4){animation-delay:.2s}
-    .card:nth-child(5){animation-delay:.25s}
-    .card:nth-child(6){animation-delay:.3s}
-    .card:nth-child(7){animation-delay:.35s}
+    .card:nth-child(2){animation-delay:.08s}
+    .card:nth-child(3){animation-delay:.11s}
+    .card:nth-child(4){animation-delay:.14s}
+    .card:nth-child(5){animation-delay:.17s}
+    .card:nth-child(6){animation-delay:.2s}
+    .card:nth-child(7){animation-delay:.23s}
+    .card:nth-child(8){animation-delay:.26s}
+    .card:nth-child(9){animation-delay:.29s}
+    .card:nth-child(10){animation-delay:.32s}
+    .card:nth-child(11){animation-delay:.35s}
+    .card:nth-child(12){animation-delay:.38s}
+    .card:nth-child(13){animation-delay:.41s}
     @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 
     @media(max-width:600px){
@@ -127,73 +131,199 @@
     </a>
 
     <div class="header">
-      <div class="badge">Legal</div>
-      <h1>Privacy Policy</h1>
-      <p class="subtitle">Last updated — April 9, 2026</p>
+      <div class="badge">Privacy Policy</div>
+      <h1>Your Privacy Matters</h1>
+      <p class="subtitle">We believe in transparency. This policy explains how Nova AI collects, uses, and protects your data.</p>
+      <p class="effective">Effective date: April 9, 2026 &middot; Last updated: April 9, 2026</p>
     </div>
 
+    <!-- 1. Introduction -->
     <div class="card">
-      <h2><span class="icon icon-blue">📋</span> Overview</h2>
-      <p>Nova AI ("we", "us", "our") respects your privacy. This policy describes how we collect, use, and protect your information when you use our service at nova-ai-blue.vercel.app.</p>
+      <h2><span class="icon icon-blue">👋</span> 1. Introduction</h2>
+      <p>Welcome to Nova AI. Nova AI ("we," "us," or "our") operates the website at <strong>nova-ai-blue.vercel.app</strong> and provides AI-powered chat services (the "Service"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our platform or use our Service.</p>
+      <p style="margin-top:.6rem">By accessing or using Nova AI, you agree to the collection and use of information in accordance with this policy. If you do not agree with the terms of this policy, please do not access the Service.</p>
     </div>
 
+    <!-- 2. Information We Collect -->
     <div class="card">
-      <h2><span class="icon icon-cyan">📦</span> Information We Collect</h2>
+      <h2><span class="icon icon-cyan">📦</span> 2. Information We Collect</h2>
+      <p>We collect information in several ways depending on how you interact with our Service:</p>
+
+      <h3>Account Information</h3>
       <ul>
-        <li><strong>Account information</strong> — email address, display name, and profile picture when you sign up</li>
-        <li><strong>Authentication data</strong> — OAuth tokens from GitHub or Google used solely to verify your identity</li>
-        <li><strong>Chat data</strong> — conversations are stored locally in your browser and are not transmitted to our servers</li>
-        <li><strong>Usage data</strong> — basic analytics such as page views may be collected by our hosting provider</li>
+        <li><strong>Name and display name</strong> you provide during account creation</li>
+        <li><strong>Email address</strong> used for authentication</li>
+        <li><strong>Profile picture</strong> you upload or import from a third-party provider</li>
+        <li><strong>Authentication credentials</strong> managed through our identity provider (Supabase) or third-party OAuth services (GitHub, Google)</li>
+      </ul>
+
+      <h3>User-Generated Content</h3>
+      <ul>
+        <li><strong>Messages and prompts</strong> you submit to the AI assistant</li>
+        <li><strong>Conversation history</strong> stored locally in your browser</li>
+        <li><strong>Profile customizations</strong> and preferences you configure</li>
+      </ul>
+
+      <h3>Automatically Collected Information</h3>
+      <ul>
+        <li><strong>Device information</strong> — browser type, operating system, screen resolution</li>
+        <li><strong>Usage data</strong> — pages visited, features used, timestamps, and interaction patterns</li>
+        <li><strong>IP address</strong> — collected by our hosting provider for security and analytics purposes</li>
+        <li><strong>Referral data</strong> — how you arrived at our platform</li>
       </ul>
     </div>
 
+    <!-- 3. How We Use Your Information -->
     <div class="card">
-      <h2><span class="icon icon-purple">🔧</span> How We Use Your Information</h2>
+      <h2><span class="icon icon-purple">⚙️</span> 3. How We Use Your Information</h2>
+      <p>We use the information we collect for the following purposes:</p>
       <ul>
-        <li>To authenticate you and provide access to your account</li>
-        <li>To personalize your experience (display name, profile picture)</li>
-        <li>To persist your chat history across sessions (stored locally)</li>
-        <li>To improve and maintain the service</li>
+        <li><strong>To provide and maintain the Service</strong> — including authenticating your identity, personalizing your experience, and enabling core features</li>
+        <li><strong>To process AI interactions</strong> — your messages are processed to generate relevant AI-powered responses</li>
+        <li><strong>To improve the Service</strong> — understanding usage patterns helps us enhance features, fix issues, and develop new capabilities</li>
+        <li><strong>To communicate with you</strong> — sending service-related notices, security alerts, and support messages</li>
+        <li><strong>To ensure security</strong> — detecting, preventing, and addressing fraud, abuse, and technical issues</li>
+        <li><strong>To comply with legal obligations</strong> — fulfilling requirements under applicable laws and regulations</li>
       </ul>
     </div>
 
+    <!-- 4. AI Data Processing -->
     <div class="card">
-      <h2><span class="icon icon-green">🔒</span> Data Storage &amp; Security</h2>
-      <p>Your chat conversations are stored exclusively in your browser's localStorage — we do not store them on any server. Authentication is handled securely through Supabase and third-party OAuth providers (GitHub, Google). We use industry-standard practices to protect your data.</p>
+      <h2><span class="icon icon-teal">🤖</span> 4. AI Data Processing</h2>
+      <div class="highlight">
+        <strong>Important:</strong> When you use Nova AI, the messages and prompts you submit are processed by AI models to generate responses. Please be mindful of the information you share in your conversations.
+      </div>
+      <ul>
+        <li>Your inputs (messages, prompts, and queries) are sent to AI language models to produce responses in real time</li>
+        <li>Conversation history is stored <strong>locally in your browser's storage</strong> — we do not retain your chat history on our servers</li>
+        <li>We do not use your personal conversations to train or improve AI models</li>
+        <li>AI-generated responses are provided for informational and assistive purposes only and may not always be accurate, complete, or current</li>
+        <li>We recommend that you <strong>do not share sensitive personal information</strong> (such as passwords, financial details, or health records) in your conversations with the AI</li>
+      </ul>
     </div>
 
     <hr class="divider" />
 
+    <!-- 5. Cookies and Tracking -->
     <div class="card">
-      <h2><span class="icon icon-orange">🤝</span> Third-Party Services</h2>
+      <h2><span class="icon icon-orange">🍪</span> 5. Cookies and Tracking Technologies</h2>
+      <p>Nova AI uses minimal tracking technologies to provide and improve the Service:</p>
       <ul>
-        <li><strong>Supabase</strong> — authentication and user management</li>
-        <li><strong>GitHub</strong> — OAuth sign-in</li>
-        <li><strong>Google</strong> — OAuth sign-in</li>
-        <li><strong>Vercel</strong> — hosting and deployment</li>
+        <li><strong>Local Storage</strong> — we store your authentication state, user profile, and conversation history in your browser's localStorage. This data remains on your device and is not transmitted to external servers</li>
+        <li><strong>Session Cookies</strong> — our authentication provider (Supabase) may use cookies to manage your login session securely</li>
+        <li><strong>Hosting Analytics</strong> — our hosting provider (Vercel) may collect standard web analytics data including page views, request logs, and performance metrics</li>
       </ul>
-      <p style="margin-top:.75rem">Each provider has its own privacy policy governing the data they process.</p>
+      <p style="margin-top:.6rem">We do not use advertising cookies or third-party behavioral tracking. You can clear your local data at any time through your browser settings.</p>
     </div>
 
+    <!-- 6. Third-Party Services -->
     <div class="card">
-      <h2><span class="icon icon-red">🗑️</span> Your Rights</h2>
+      <h2><span class="icon icon-blue">🔗</span> 6. Third-Party Services</h2>
+      <p>We rely on trusted third-party services to operate our platform. Each has its own privacy policy governing data they process:</p>
       <ul>
-        <li>You can delete your local data at any time by clearing your browser storage</li>
-        <li>You can revoke OAuth access through your GitHub or Google account settings</li>
-        <li>You can request account deletion by contacting us</li>
+        <li><strong>Supabase</strong> — authentication, user management, and identity services (<a href="https://supabase.com/privacy" target="_blank">Privacy Policy</a>)</li>
+        <li><strong>Vercel</strong> — web hosting, deployment, and edge network infrastructure (<a href="https://vercel.com/legal/privacy-policy" target="_blank">Privacy Policy</a>)</li>
+        <li><strong>GitHub</strong> — OAuth authentication for sign-in (<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank">Privacy Statement</a>)</li>
+        <li><strong>Google</strong> — OAuth authentication for sign-in (<a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a>)</li>
+      </ul>
+      <p style="margin-top:.6rem">We carefully select providers that maintain high standards for data protection and security. We only share the minimum information necessary for each service to function.</p>
+    </div>
+
+    <!-- 7. Data Sharing -->
+    <div class="card">
+      <h2><span class="icon icon-green">🛡️</span> 7. Data Sharing and Disclosure</h2>
+      <div class="highlight">
+        <strong>We do not sell your personal information.</strong> We will never sell, rent, or trade your data to third parties for marketing or advertising purposes.
+      </div>
+      <p>We may share your information only in the following limited circumstances:</p>
+      <ul>
+        <li><strong>Service providers</strong> — with trusted third-party services that help us operate the platform (as listed above), bound by contractual obligations to protect your data</li>
+        <li><strong>Legal requirements</strong> — when required by law, subpoena, court order, or government request</li>
+        <li><strong>Safety and security</strong> — to protect the rights, safety, or property of Nova AI, our users, or the public</li>
+        <li><strong>Business transfers</strong> — in connection with a merger, acquisition, or sale of assets, in which case your data would remain subject to this Privacy Policy</li>
       </ul>
     </div>
 
+    <!-- 8. Data Retention -->
     <div class="card">
-      <h2><span class="icon icon-blue">✉️</span> Contact</h2>
-      <p>If you have any questions about this policy, reach us through our GitHub repository at <a href="https://github.com/omarhshehata-sudo/nova-ai">github.com/omarhshehata-sudo/nova-ai</a>.</p>
+      <h2><span class="icon icon-purple">🗄️</span> 8. Data Retention</h2>
+      <p>We retain your information only for as long as necessary to fulfill the purposes described in this policy:</p>
+      <ul>
+        <li><strong>Account data</strong> — retained for as long as your account is active or as needed to provide you with the Service</li>
+        <li><strong>Conversation history</strong> — stored locally in your browser and fully under your control. You can delete it at any time by clearing your browser storage</li>
+        <li><strong>Usage and analytics data</strong> — retained in aggregated, anonymized form for service improvement</li>
+        <li><strong>Authentication logs</strong> — retained by our identity provider (Supabase) according to their retention policies</li>
+      </ul>
+      <p style="margin-top:.6rem">When you delete your account or request data deletion, we will remove your personal information from our active systems within a reasonable timeframe, except where retention is required by law.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- 9. Data Security -->
+    <div class="card">
+      <h2><span class="icon icon-green">🔒</span> 9. Data Security</h2>
+      <p>We take the security of your data seriously and implement appropriate technical and organizational measures to protect it:</p>
+      <ul>
+        <li>All data transmitted between your browser and our servers is encrypted using <strong>TLS/SSL encryption</strong></li>
+        <li>Authentication is handled through industry-standard <strong>OAuth 2.0 protocols</strong> and secure session management</li>
+        <li>We use <strong>Supabase's enterprise-grade infrastructure</strong> for identity management, which includes encryption at rest and in transit</li>
+        <li>Our application is hosted on <strong>Vercel's secure edge network</strong> with built-in DDoS protection and security headers</li>
+        <li>Sensitive conversation data is stored <strong>locally on your device</strong>, reducing attack surface and server-side risk</li>
+      </ul>
+      <p style="margin-top:.6rem">While we strive to protect your personal information, no method of transmission or storage is 100% secure. We cannot guarantee absolute security, but we continuously monitor and improve our security practices.</p>
+    </div>
+
+    <!-- 10. Your Rights -->
+    <div class="card">
+      <h2><span class="icon icon-cyan">⚖️</span> 10. Your Rights</h2>
+      <p>Depending on your location and applicable laws, you may have the following rights regarding your personal data:</p>
+      <ul>
+        <li><strong>Access</strong> — request a copy of the personal data we hold about you</li>
+        <li><strong>Correction</strong> — request that we correct inaccurate or incomplete personal data</li>
+        <li><strong>Deletion</strong> — request that we delete your personal data (subject to legal retention requirements)</li>
+        <li><strong>Data portability</strong> — request your data in a structured, commonly used, machine-readable format</li>
+        <li><strong>Objection</strong> — object to the processing of your data in certain circumstances</li>
+        <li><strong>Withdraw consent</strong> — where processing is based on consent, you may withdraw it at any time</li>
+        <li><strong>Revoke OAuth access</strong> — you can disconnect GitHub or Google access directly from your account settings on those platforms</li>
+      </ul>
+      <p style="margin-top:.6rem">To exercise any of these rights, please contact us using the information provided below. We will respond to your request within 30 days.</p>
+    </div>
+
+    <!-- 11. Children's Privacy -->
+    <div class="card">
+      <h2><span class="icon icon-pink">👶</span> 11. Children's Privacy</h2>
+      <p>Nova AI is not intended for use by children under the age of 13 (or the applicable age of digital consent in your jurisdiction). We do not knowingly collect personal information from children.</p>
+      <p style="margin-top:.6rem">If you are a parent or guardian and believe that your child has provided us with personal information, please contact us immediately. If we become aware that we have collected personal data from a child without verification of parental consent, we will take steps to remove that information from our systems promptly.</p>
+    </div>
+
+    <!-- 12. Changes to This Policy -->
+    <div class="card">
+      <h2><span class="icon icon-orange">🔄</span> 12. Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. When we make changes:</p>
+      <ul>
+        <li>We will update the "Last updated" date at the top of this page</li>
+        <li>For material changes, we may notify you through the Service or via email</li>
+        <li>Your continued use of Nova AI after changes are posted constitutes your acceptance of the revised policy</li>
+      </ul>
+      <p style="margin-top:.6rem">We encourage you to review this Privacy Policy periodically to stay informed about how we protect your data.</p>
+    </div>
+
+    <!-- 13. Contact -->
+    <div class="card">
+      <h2><span class="icon icon-blue">✉️</span> 13. Contact Us</h2>
+      <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please reach out to us:</p>
+      <ul>
+        <li><strong>GitHub</strong> — <a href="https://github.com/omarhshehata-sudo/nova-ai" target="_blank">github.com/omarhshehata-sudo/nova-ai</a></li>
+        <li><strong>Platform</strong> — <a href="https://nova-ai-blue.vercel.app" target="_blank">nova-ai-blue.vercel.app</a></li>
+      </ul>
+      <p style="margin-top:.6rem">We aim to respond to all privacy-related inquiries within 30 days.</p>
     </div>
 
     <div class="footer">
-      <p>© 2026 Nova AI</p>
+      <p>&copy; 2026 Nova AI. All rights reserved.</p>
       <div class="links">
         <a href="/terms">Terms of Service</a>
-        <span class="sep">·</span>
+        <span class="sep">&middot;</span>
         <a href="/privacy">Privacy Policy</a>
       </div>
     </div>
