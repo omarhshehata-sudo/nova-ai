@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { IconPlus, IconSend, IconMic } from './Icons';
 import '../styles/InputArea.css';
 
@@ -9,12 +9,16 @@ interface InputAreaProps {
 
 export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }) => {
   const [input, setInput] = useState('');
+  const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
     if (input.trim() && !isLoading) {
       onSendMessage(input);
       setInput('');
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '42px';
+      }
     }
   };
 
@@ -25,43 +29,54 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
     }
   };
 
+  // Auto-resize textarea
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = '42px';
+    const next = Math.min(el.scrollHeight, 160);
+    el.style.height = `${next}px`;
+  }, [input]);
+
   return (
-    <div className="input-area-chatgpt">
-      <div className="input-dock-chatgpt">
-        {/* Text Input */}
-        <div className="input-field-wrapper-chatgpt">
-          <button className="input-btn-chatgpt input-plus-chatgpt" aria-label="Add attachment">
-            <IconPlus />
-          </button>
-          <textarea
-            ref={textareaRef}
-            className="input-field-chatgpt"
-            placeholder="Message Nova AI..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
+    <div className="input-area">
+      <div className={`input-dock${focused ? ' input-dock--focused' : ''}`}>
+        <button className="input-icon-btn input-icon-btn--subtle" aria-label="Add attachment">
+          <IconPlus />
+        </button>
+
+        <textarea
+          ref={textareaRef}
+          className="input-field"
+          placeholder="Ask Nova anything…"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          disabled={isLoading}
+          rows={1}
+        />
+
+        <div className="input-actions">
+          <button
+            className="input-icon-btn input-icon-btn--subtle"
+            aria-label="Voice input"
             disabled={isLoading}
-          />
-          <div className="input-actions">
-            <button
-              className="input-btn-chatgpt input-mic-chatgpt"
-              aria-label="Voice input"
-              disabled={isLoading}
-            >
-              <IconMic />
-            </button>
-            <button
-              className={`input-btn-chatgpt input-send-chatgpt ${!input.trim() || isLoading ? 'disabled' : ''}`}
-              onClick={handleSend}
-              disabled={!input.trim() || isLoading}
-              aria-label="Send message"
-            >
-              <IconSend />
-            </button>
-          </div>
+          >
+            <IconMic />
+          </button>
+          <button
+            className="input-icon-btn input-send-btn"
+            onClick={handleSend}
+            disabled={!input.trim() || isLoading}
+            aria-label="Send message"
+          >
+            <IconSend />
+          </button>
         </div>
       </div>
-      <p className="input-hint">Free research preview. Our AI makes mistakes sometimes. Please double-check important info.</p>
+      <p className="input-disclaimer">Nova can make mistakes. Consider checking important information.</p>
     </div>
   );
 };
