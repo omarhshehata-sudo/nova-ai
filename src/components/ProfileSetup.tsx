@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import type { UserProfile, GitHubAuth } from '../types';
 import '../styles/ProfileSetup.css';
 
@@ -17,10 +17,51 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
 }) => {
   const [username, setUsername] = useState('');
   const [profilePic, setProfilePic] = useState<string>(DEFAULT_AVATAR);
+  const [rawImage, setRawImage] = useState<string>('');
   const [useDefault, setUseDefault] = useState(true);
+  const [zoom, setZoom] = useState(1);
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const renderCroppedImage = useCallback((img: string, z: number, ox: number, oy: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const image = new Image();
+    image.onload = () => {
+      canvas.width = 200;
+      canvas.height = 200;
+
+      ctx.clearRect(0, 0, 200, 200);
+
+      // Draw circular clip
+      ctx.beginPath();
+      ctx.arc(100, 100, 100, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+
+      // Calculate dimensions
+      const size = Math.min(image.width, image.height);
+      const srcX = (image.width - size) / 2;
+      const srcY = (image.height - size) / 2;
+
+      const drawSize = 200 * z;
+      const drawX = (200 - drawSize) / 2 + ox;
+      const drawY = (200 - drawSize) / 2 + oy;
+
+      ctx.drawImage(image, srcX, srcY, size, size, drawX, drawY, drawSize, drawSize);
+
+      setProfilePic(canvas.toDataURL('image/png'));
+    };
+    image.src = img;
+  }, []);
 
   if (!isOpen || !githubAuth) return null;
 
@@ -43,16 +84,26 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
+      setRawImage(result);
       setProfilePic(result);
       setUseDefault(false);
+      setZoom(1);
+      setOffsetX(0);
+      setOffsetY(0);
       setError('');
+      // Render initial crop after a tick so canvas is visible
+      setTimeout(() => renderCroppedImage(result, 1, 0, 0), 50);
     };
     reader.readAsDataURL(file);
   };
 
   const handleUseDefault = () => {
     setProfilePic(DEFAULT_AVATAR);
+    setRawImage('');
     setUseDefault(true);
+    setZoom(1);
+    setOffsetX(0);
+    setOffsetY(0);
     setError('');
   };
 
@@ -115,7 +166,62 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
                 alt="Profile preview"
                 className="profile-pic-img"
               />
+              <canvas ref={canvasRef} style={{ display: 'none' }} />
             </div>
+
+            {/* Adjustment controls - only show when custom image uploaded */}
+            {!useDefault && rawImage && (
+              <div className="pic-adjust-controls">
+                <div className="adjust-row">
+                  <label>Zoom</label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="3"
+                    step="0.05"
+                    value={zoom}
+                    onChange={(e) => {
+                      const z = parseFloat(e.target.value);
+                      setZoom(z);
+                      renderCroppedImage(rawImage, z, offsetX, offsetY);
+                    }}
+                    className="adjust-slider"
+                  />
+                </div>
+                <div className="adjust-row">
+                  <label>Left / Right</label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    step="1"
+                    value={offsetX}
+                    onChange={(e) => {
+                      const ox = parseInt(e.target.value);
+                      setOffsetX(ox);
+                      renderCroppedImage(rawImage, zoom, ox, offsetY);
+                    }}
+                    className="adjust-slider"
+                  />
+                </div>
+                <div className="adjust-row">
+                  <label>Up / Down</label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    step="1"
+                    value={offsetY}
+                    onChange={(e) => {
+                      const oy = parseInt(e.target.value);
+                      setOffsetY(oy);
+                      renderCroppedImage(rawImage, zoom, offsetX, oy);
+                    }}
+                    className="adjust-slider"
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="profile-pic-options">
               <button
