@@ -12,17 +12,8 @@ import './styles/globals.css';
 import './styles/App.css';
 
 function App() {
-  const [chats, setChats] = useState<Chat[]>(() => {
-    try {
-      const saved = localStorage.getItem('chats');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [activeChat, setActiveChat] = useState<string | null>(() => {
-    return localStorage.getItem('activeChat') || null;
-  });
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [activeChat, setActiveChat] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeSection, setActiveSection] = useState('chat');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -30,6 +21,24 @@ function App() {
   const [isProfileSetupOpen, setIsProfileSetupOpen] = useState(false);
   const [githubAuth, setGithubAuth] = useState<GitHubAuth | null>(null);
   const streamingResponseRef = useRef<string>('');
+
+  // Load saved chats when user logs in, clear when logged out
+  useEffect(() => {
+    if (userProfile) {
+      try {
+        const saved = localStorage.getItem('chats');
+        if (saved) {
+          setChats(JSON.parse(saved));
+          setActiveChat(localStorage.getItem('activeChat') || null);
+        }
+      } catch {
+        // ignore
+      }
+    } else {
+      setChats([]);
+      setActiveChat(null);
+    }
+  }, [userProfile]);
 
   // Save chats to localStorage whenever they change (only if logged in)
   useEffect(() => {
