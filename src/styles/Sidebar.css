@@ -186,7 +186,117 @@
   box-shadow: 0 0 8px rgba(0, 217, 255, 0.15);
 }
 
-/* ===== USER PROFILE SECTION ===== */
+/* ===== PREMIUM PROFILE CARD ===== */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  border: 1px solid rgba(0, 217, 255, 0.12);
+  transition: all 0.2s ease;
+  cursor: default;
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.profile-card:hover {
+  transform: scale(1.02);
+  border-color: rgba(0, 217, 255, 0.35);
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.08), 0 0 40px rgba(139, 92, 246, 0.04);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.profile-card:hover::before {
+  opacity: 1;
+}
+
+/* Avatar wrapper with gradient ring */
+.profile-card-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profile-card-avatar-ring {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, #00d9ff 0%, #8b5cf6 50%, #a855f7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.2), 0 0 24px rgba(139, 92, 246, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.profile-card:hover .profile-card-avatar-ring {
+  box-shadow: 0 0 16px rgba(0, 217, 255, 0.35), 0 0 32px rgba(139, 92, 246, 0.15);
+}
+
+.profile-card-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0d1b2a;
+}
+
+/* Online status dot */
+.profile-card-status-dot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #0d1b2a;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+}
+
+/* Text info */
+.profile-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.2px;
+  line-height: 1.3;
+}
+
+.profile-card-plan {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(148, 163, 184, 0.7);
+  margin: 2px 0 0 0;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+
+/* ===== OLD PROFILE (deprecated) ===== */
 .user-profile-section {
   display: flex;
   align-items: center;

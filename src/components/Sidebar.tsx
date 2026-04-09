@@ -102,10 +102,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         {userProfile ? (
-          <div className="user-profile-section">
-            <img src={userProfile.profilePic} alt={userProfile.username} className="user-profile-pic" />
-            <div className="user-profile-info">
-              <p className="user-profile-name">{userProfile.username}</p>
+          <div className="profile-card">
+            <div className="profile-card-avatar-wrapper">
+              <div className="profile-card-avatar-ring">
+                <img src={userProfile.profilePic} alt={userProfile.username} className="profile-card-avatar" />
+              </div>
+              <span className="profile-card-status-dot" />
+            </div>
+            <div className="profile-card-info">
+              <p className="profile-card-name">{userProfile.username}</p>
+              <p className="profile-card-plan">Free Plan</p>
             </div>
           </div>
         ) : (
