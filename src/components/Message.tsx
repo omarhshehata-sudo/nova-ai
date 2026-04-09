@@ -5,9 +5,10 @@ import '../styles/Message.css';
 
 interface MessageProps {
   message: MessageType;
+  userProfilePic?: string;
 }
 
-export const Message: React.FC<MessageProps> = ({ message }) => {
+export const Message: React.FC<MessageProps> = ({ message, userProfilePic }) => {
   const isUser = message.role === 'user';
 
   return (
@@ -15,7 +16,11 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
       <div className="message-container">
         <div className="message-avatar">
           {isUser ? (
-            <IconUser />
+            userProfilePic ? (
+              <img src={userProfilePic} alt="You" className="message-avatar-img" />
+            ) : (
+              <IconUser />
+            )
           ) : (
             <svg
               width="32"

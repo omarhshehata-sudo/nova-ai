@@ -6,9 +6,10 @@ import '../styles/ChatArea.css';
 interface ChatAreaProps {
   messages: MessageType[];
   isLoading: boolean;
+  userProfilePic?: string;
 }
 
-export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading }) => {
+export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading, userProfilePic }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading }) => {
         ) : (
           <div className="messages-container-chatgpt">
             {messages.map((msg) => (
-              <Message key={msg.id} message={msg} />
+              <Message key={msg.id} message={msg} userProfilePic={userProfilePic} />
             ))}
             {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
               <div className="message message-assistant">
