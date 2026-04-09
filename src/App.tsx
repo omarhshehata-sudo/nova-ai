@@ -22,13 +22,6 @@ function App() {
   const [githubAuth, setGithubAuth] = useState<GitHubAuth | null>(null);
   const streamingResponseRef = useRef<string>('');
 
-  // Helper to get a storage key unique to the current user
-  const getUserStorageKey = useCallback((base: string) => {
-    if (!userProfile) return base;
-    const id = userProfile.githubId || userProfile.username || 'unknown';
-    return `${base}_${id}`;
-  }, [userProfile]);
-
   // Load saved chats when user logs in, clear when logged out
   useEffect(() => {
     if (userProfile) {
