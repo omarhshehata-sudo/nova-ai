@@ -34,3 +34,57 @@
     opacity: 1;
   }
 }
+
+/* ===== CROSS-TAB AUTH BANNER ===== */
+.cross-tab-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  animation: bannerSlide 300ms ease;
+}
+
+@keyframes bannerSlide {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+.cross-tab-banner button {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent-cyan);
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cross-tab-banner button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
+}
+
+[data-theme="light"] .cross-tab-banner {
+  background: linear-gradient(135deg, #e0e7ff, #ede9fe);
+  border-bottom-color: #c7d2fe;
+  color: #1e293b;
+}
+
+[data-theme="light"] .cross-tab-banner button {
+  background: #6366f1;
+  color: #fff;
+}

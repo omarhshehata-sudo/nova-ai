@@ -144,10 +144,13 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 export function Settings({ userProfile, settings, onSettingsChange, onLogout, onClearChats, onBack }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<SettingsSection>('general');
   const [saved, setSaved] = useState(false);
-  const [confirmClearChats, setConfirmClearChats] = useState(false);
-  const [confirmClearData, setConfirmClearData] = useState(false);
   const [passwordResetSent, setPasswordResetSent] = useState(false);
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showClearChatsConfirm, setShowClearChatsConfirm] = useState(false);
+  const [showClearDataConfirm, setShowClearDataConfirm] = useState(false);
+  const [showResetDefaultsConfirm, setShowResetDefaultsConfirm] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
   const [draft, setDraft] = useState<SettingsState>({ ...settings });
   const initialSettings = useRef(JSON.stringify(settings));
 
@@ -165,13 +168,19 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
     setSaved(false);
   }, []);
 
+  const showToast = useCallback((message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 2500);
+  }, []);
+
   const handleSave = useCallback(() => {
     saveSettings(draft);
     onSettingsChange(draft);
     initialSettings.current = JSON.stringify(draft);
     setSaved(true);
+    showToast('Settings saved successfully');
     setTimeout(() => setSaved(false), 2000);
-  }, [draft, onSettingsChange]);
+  }, [draft, onSettingsChange, showToast]);
 
   const handleBack = useCallback(() => {
     if (hasUnsaved) {
@@ -200,26 +209,11 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
     }
   }, [userProfile?.email]);
 
-  const handleClearChats = useCallback(() => {
-    if (!confirmClearChats) {
-      setConfirmClearChats(true);
-      setTimeout(() => setConfirmClearChats(false), 3000);
-      return;
-    }
-    onClearChats();
-    setConfirmClearChats(false);
-  }, [confirmClearChats, onClearChats]);
-
-  const handleClearAllData = useCallback(() => {
-    if (!confirmClearData) {
-      setConfirmClearData(true);
-      setTimeout(() => setConfirmClearData(false), 3000);
-      return;
-    }
-    onClearChats();
-    onLogout();
-    setConfirmClearData(false);
-  }, [confirmClearData, onClearChats, onLogout]);
+  const handleResetDefaults = useCallback(() => {
+    setDraft({ ...defaultSettings });
+    setShowResetDefaultsConfirm(false);
+    showToast('Settings reset to defaults — save to apply');
+  }, [showToast]);
 
   return (
     <div className="settings-container">
@@ -322,6 +316,18 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                   </select>
                 </div>
               </div>
+
+              <div className="settings-group">
+                <div className="settings-row">
+                  <div className="settings-row-info">
+                    <span className="settings-row-label">Reset to Defaults</span>
+                    <span className="settings-row-hint">Restore all settings to their original values</span>
+                  </div>
+                  <button className="settings-reset-btn" onClick={() => setShowResetDefaultsConfirm(true)}>
+                    Reset
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
@@ -368,11 +374,11 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                     <span className="settings-row-hint">Permanently delete all conversations. This action cannot be undone.</span>
                   </div>
                   <button
-                    className={`settings-danger-btn ${confirmClearChats ? 'settings-danger-btn--confirm' : ''}`}
-                    onClick={handleClearChats}
+                    className="settings-danger-btn"
+                    onClick={() => setShowClearChatsConfirm(true)}
                   >
                     <TrashIcon />
-                    {confirmClearChats ? 'Confirm Delete' : 'Clear Chats'}
+                    Clear Chats
                   </button>
                 </div>
               </div>
@@ -414,11 +420,11 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                     <span className="settings-row-hint">Delete all chats, settings, and sign out of your account. This cannot be undone.</span>
                   </div>
                   <button
-                    className={`settings-danger-btn ${confirmClearData ? 'settings-danger-btn--confirm' : ''}`}
-                    onClick={handleClearAllData}
+                    className="settings-danger-btn"
+                    onClick={() => setShowClearDataConfirm(true)}
                   >
                     <TrashIcon />
-                    {confirmClearData ? 'Confirm Delete All' : 'Clear All Data'}
+                    Clear All Data
                   </button>
                 </div>
               </div>
@@ -508,7 +514,7 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                         <span className="settings-row-label">Log Out</span>
                         <span className="settings-row-hint">Sign out of your account on this device. Your data will be preserved.</span>
                       </div>
-                      <button className="settings-logout-btn" onClick={onLogout}>
+                      <button className="settings-logout-btn" onClick={() => setShowLogoutConfirm(true)}>
                         <LogOutIcon />
                         Log Out
                       </button>
@@ -537,6 +543,61 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
           onConfirm={handleDiscardAndLeave}
           onCancel={() => setShowLeaveWarning(false)}
         />
+      )}
+
+      {showLogoutConfirm && (
+        <ConfirmDialog
+          isOpen={true}
+          title="Log Out"
+          message="Are you sure you want to log out? You can sign back in anytime."
+          confirmText="Log Out"
+          cancelText="Cancel"
+          onConfirm={() => { setShowLogoutConfirm(false); onLogout(); }}
+          onCancel={() => setShowLogoutConfirm(false)}
+          isDangerous
+        />
+      )}
+
+      {showClearChatsConfirm && (
+        <ConfirmDialog
+          isOpen={true}
+          title="Delete All Chats"
+          message="This will permanently delete all your conversations. This action cannot be undone."
+          confirmText="Delete All"
+          cancelText="Cancel"
+          onConfirm={() => { setShowClearChatsConfirm(false); onClearChats(); }}
+          onCancel={() => setShowClearChatsConfirm(false)}
+          isDangerous
+        />
+      )}
+
+      {showClearDataConfirm && (
+        <ConfirmDialog
+          isOpen={true}
+          title="Clear All Data"
+          message="This will delete all chats, settings, and sign you out. This action cannot be undone."
+          confirmText="Clear Everything"
+          cancelText="Cancel"
+          onConfirm={() => { setShowClearDataConfirm(false); onClearChats(); onLogout(); }}
+          onCancel={() => setShowClearDataConfirm(false)}
+          isDangerous
+        />
+      )}
+
+      {showResetDefaultsConfirm && (
+        <ConfirmDialog
+          isOpen={true}
+          title="Reset to Defaults"
+          message="This will reset all settings to their default values. You'll still need to save to apply."
+          confirmText="Reset"
+          cancelText="Cancel"
+          onConfirm={handleResetDefaults}
+          onCancel={() => setShowResetDefaultsConfirm(false)}
+        />
+      )}
+
+      {toast && (
+        <div className="settings-toast">{toast}</div>
       )}
     </div>
   );

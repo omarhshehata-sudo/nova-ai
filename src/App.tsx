@@ -8,6 +8,7 @@ import { AuthModal } from './components/AuthModal';
 import { ProfileSetup } from './components/ProfileSetup';
 import { Settings, loadSettings } from './components/Settings';
 import type { SettingsState } from './components/Settings';
+import { ResetPassword } from './components/ResetPassword';
 import { createNewChat, createMessage, generateChatTitle, simulateStreamingResponse } from './utils';
 import { supabase } from './supabaseClient';
 import './styles/globals.css';
@@ -23,6 +24,8 @@ function App() {
   const [isProfileSetupOpen, setIsProfileSetupOpen] = useState(false);
   const [githubAuth, setGithubAuth] = useState<GitHubAuth | null>(null);
   const [appSettings, setAppSettings] = useState<SettingsState>(loadSettings);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [crossTabReload, setCrossTabReload] = useState(false);
   const streamingResponseRef = useRef<string>('');
 
   // Apply theme, font size, and UI density to document root
@@ -96,6 +99,21 @@ function App() {
     }
   }, []);
 
+  // Cross-tab auth sync: detect account changes in other tabs
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'userProfile') {
+        const currentProfile = userProfile ? JSON.stringify({ email: userProfile.email, username: userProfile.username }) : null;
+        const newProfile = e.newValue ? (() => { try { const p = JSON.parse(e.newValue!); return JSON.stringify({ email: p.email, username: p.username }); } catch { return null; } })() : null;
+        if (currentProfile !== newProfile) {
+          setCrossTabReload(true);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, [userProfile]);
+
   // Check for GitHub auth - runs on mount and when auth modal closes
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -135,17 +153,7 @@ function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
       // Handle password recovery redirect
       if (event === 'PASSWORD_RECOVERY' && session?.user) {
-        const newPassword = window.prompt('Enter your new password (min 8 chars, must include uppercase, lowercase, and number):');
-        if (newPassword && newPassword.length >= 8) {
-          const { error } = await supabase.auth.updateUser({ password: newPassword });
-          if (error) {
-            alert('Failed to update password: ' + error.message);
-          } else {
-            alert('Password updated successfully!');
-          }
-        } else if (newPassword !== null) {
-          alert('Password must be at least 8 characters with uppercase, lowercase, and a number.');
-        }
+        setShowResetPassword(true);
         return;
       }
 
@@ -387,7 +395,13 @@ function App() {
 
 
   return (
-    <div className="app-container" style={{ fontSize: `${appSettings.fontSize}px` }}>
+    <div className="app-container">
+      {crossTabReload && (
+        <div className="cross-tab-banner">
+          <span>Your account changed in another tab.</span>
+          <button onClick={() => window.location.reload()}>Reload Page</button>
+        </div>
+      )}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
@@ -398,6 +412,9 @@ function App() {
         githubAuth={githubAuth}
         onComplete={handleProfileSetupComplete}
       />
+      {showResetPassword && (
+        <ResetPassword onComplete={() => setShowResetPassword(false)} />
+      )}
 
       <Sidebar
         activeSection={activeSection}
