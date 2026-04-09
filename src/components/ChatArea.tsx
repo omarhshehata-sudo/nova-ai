@@ -8,6 +8,8 @@ interface ChatAreaProps {
   isLoading: boolean;
   userProfilePic?: string;
   onSendMessage?: (message: string) => void;
+  autoScroll?: boolean;
+  showTimestamps?: boolean;
 }
 
 /* ===== SVG ICONS FOR FEATURE CARDS ===== */
@@ -43,12 +45,14 @@ const IconArrow = () => (
   </svg>
 );
 
-export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading, userProfilePic, onSendMessage }) => {
+export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading, userProfilePic, onSendMessage, autoScroll = true, showTimestamps = false }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (autoScroll) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, autoScroll]);
 
   const features = [
     { icon: <IconCreate />, title: 'Create', desc: 'Build plans, outlines & strategies', color: 'purple' },
@@ -129,7 +133,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading, userPro
         ) : (
           <div className="messages-container-chatgpt">
             {messages.map((msg) => (
-              <Message key={msg.id} message={msg} userProfilePic={userProfilePic} />
+              <Message key={msg.id} message={msg} userProfilePic={userProfilePic} showTimestamp={showTimestamps} />
             ))}
             {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
               <div className="message message-assistant">

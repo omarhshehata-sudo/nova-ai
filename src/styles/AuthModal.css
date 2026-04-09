@@ -420,6 +420,26 @@
   color: rgba(0, 217, 255, 0.9);
 }
 
+.auth-forgot-password--prominent {
+  color: rgba(0, 217, 255, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  margin-top: 8px;
+  background: rgba(0, 217, 255, 0.06);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  border-radius: 8px;
+  width: 100%;
+  text-align: center;
+  animation: authStepIn 200ms ease;
+}
+
+.auth-forgot-password--prominent:hover:not(:disabled) {
+  background: rgba(0, 217, 255, 0.12);
+  border-color: rgba(0, 217, 255, 0.4);
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.1);
+}
+
 /* ===== HINT TEXT ===== */
 .auth-hint {
   color: rgba(148, 163, 184, 0.55);

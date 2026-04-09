@@ -5,9 +5,10 @@ import '../styles/InputArea.css';
 interface InputAreaProps {
   onSendMessage: (message: string) => void;
   isLoading: boolean;
+  enterToSend?: boolean;
 }
 
-export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }) => {
+export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading, enterToSend = true }) => {
   const [input, setInput] = useState('');
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -23,9 +24,16 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+    if (enterToSend) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    } else {
+      if (e.key === 'Enter' && e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
     }
   };
 

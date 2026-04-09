@@ -108,7 +108,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     setLoading(false);
 
     if (error) {
-      setError(error.message);
+      if (error.message.toLowerCase().includes('invalid') || error.message.toLowerCase().includes('credentials')) {
+        setError('Invalid email or password. Did you forget your password?');
+      } else {
+        setError(error.message);
+      }
       return;
     }
 
@@ -350,11 +354,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               </button>
               <button
                 type="button"
-                className="auth-forgot-password"
-                onClick={() => setStep('forgot-password')}
+                className={`auth-forgot-password ${error && error.includes('forget') ? 'auth-forgot-password--prominent' : ''}`}
+                onClick={() => { setError(''); setStep('forgot-password'); }}
                 disabled={loading}
               >
-                Forgot password?
+                {error && error.includes('forget') ? '→ Reset your password' : 'Forgot password?'}
               </button>
             </form>
             <div className="auth-divider">or</div>

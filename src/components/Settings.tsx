@@ -1,17 +1,9 @@
 import { useState, useCallback } from 'react';
 import type { UserProfile } from '../types';
+import { supabase } from '../supabaseClient';
 import '../styles/Settings.css';
 
-interface SettingsProps {
-  userProfile: UserProfile | null;
-  onLogout: () => void;
-  onClearChats: () => void;
-  onBack: () => void;
-}
-
-type SettingsSection = 'general' | 'chat' | 'privacy' | 'account';
-
-interface SettingsState {
+export interface SettingsState {
   theme: 'dark' | 'light';
   fontSize: number;
   uiDensity: 'compact' | 'comfortable' | 'spacious';
@@ -22,7 +14,7 @@ interface SettingsState {
   allowDataUsage: boolean;
 }
 
-const defaultSettings: SettingsState = {
+export const defaultSettings: SettingsState = {
   theme: 'dark',
   fontSize: 16,
   uiDensity: 'comfortable',
@@ -33,7 +25,7 @@ const defaultSettings: SettingsState = {
   allowDataUsage: false,
 };
 
-function loadSettings(): SettingsState {
+export function loadSettings(): SettingsState {
   try {
     const saved = localStorage.getItem('novaSettings');
     if (saved) return { ...defaultSettings, ...JSON.parse(saved) };
@@ -44,6 +36,17 @@ function loadSettings(): SettingsState {
 function saveSettings(settings: SettingsState) {
   localStorage.setItem('novaSettings', JSON.stringify(settings));
 }
+
+interface SettingsProps {
+  userProfile: UserProfile | null;
+  settings: SettingsState;
+  onSettingsChange: (settings: SettingsState) => void;
+  onLogout: () => void;
+  onClearChats: () => void;
+  onBack: () => void;
+}
+
+type SettingsSection = 'general' | 'chat' | 'privacy' | 'account';
 
 /* ===== SVG Icons ===== */
 const GearIcon = () => (
@@ -121,27 +124,35 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   );
 }
 
-export function Settings({ userProfile, onLogout, onClearChats, onBack }: SettingsProps) {
+export function Settings({ userProfile, settings, onSettingsChange, onLogout, onClearChats, onBack }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<SettingsSection>('general');
-  const [settings, setSettings] = useState<SettingsState>(loadSettings);
   const [saved, setSaved] = useState(false);
   const [confirmClearChats, setConfirmClearChats] = useState(false);
   const [confirmClearData, setConfirmClearData] = useState(false);
+  const [passwordResetSent, setPasswordResetSent] = useState(false);
 
   const updateSetting = useCallback(<K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
-    setSettings(prev => {
-      const next = { ...prev, [key]: value };
-      saveSettings(next);
-      return next;
-    });
+    const next = { ...settings, [key]: value };
+    saveSettings(next);
+    onSettingsChange(next);
     setSaved(false);
-  }, []);
+  }, [settings, onSettingsChange]);
 
   const handleSave = useCallback(() => {
     saveSettings(settings);
+    onSettingsChange(settings);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
-  }, [settings]);
+  }, [settings, onSettingsChange]);
+
+  const handleChangePassword = useCallback(async () => {
+    if (!userProfile?.email) return;
+    const { error } = await supabase.auth.resetPasswordForEmail(userProfile.email);
+    if (!error) {
+      setPasswordResetSent(true);
+      setTimeout(() => setPasswordResetSent(false), 4000);
+    }
+  }, [userProfile?.email]);
 
   const handleClearChats = useCallback(() => {
     if (!confirmClearChats) {
@@ -372,6 +383,49 @@ export function Settings({ userProfile, onLogout, onClearChats, onBack }: Settin
                       )}
                     </div>
                     <div className="settings-account-badge">Free Plan</div>
+                  </div>
+
+                  <div className="settings-group">
+                    <div className="settings-row">
+                      <div className="settings-row-info">
+                        <span className="settings-row-label">Username</span>
+                        <span className="settings-row-hint">Your display name</span>
+                      </div>
+                      <span className="settings-row-value">{userProfile.username}</span>
+                    </div>
+
+                    {userProfile.email && (
+                      <div className="settings-row">
+                        <div className="settings-row-info">
+                          <span className="settings-row-label">Email</span>
+                          <span className="settings-row-hint">Your account email address</span>
+                        </div>
+                        <span className="settings-row-value">{userProfile.email}</span>
+                      </div>
+                    )}
+
+                    <div className="settings-row">
+                      <div className="settings-row-info">
+                        <span className="settings-row-label">Password</span>
+                        <span className="settings-row-hint">
+                          {userProfile.githubUsername
+                            ? 'Managed by GitHub'
+                            : 'Last set during account creation'}
+                        </span>
+                      </div>
+                      <div className="settings-password-group">
+                        <span className="settings-row-value settings-password-mask">••••••••</span>
+                        {userProfile.email && !userProfile.githubUsername && (
+                          <button
+                            className={`settings-change-pw-btn ${passwordResetSent ? 'settings-change-pw-btn--sent' : ''}`}
+                            onClick={handleChangePassword}
+                            disabled={passwordResetSent}
+                          >
+                            {passwordResetSent ? 'Reset link sent!' : 'Change'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   <div className="settings-group">

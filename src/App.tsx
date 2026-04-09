@@ -6,7 +6,8 @@ import { InputArea } from './components/InputArea';
 import { ChatHistory } from './components/ChatHistory';
 import { AuthModal } from './components/AuthModal';
 import { ProfileSetup } from './components/ProfileSetup';
-import { Settings } from './components/Settings';
+import { Settings, loadSettings } from './components/Settings';
+import type { SettingsState } from './components/Settings';
 import { createNewChat, createMessage, generateChatTitle, simulateStreamingResponse } from './utils';
 import { supabase } from './supabaseClient';
 import './styles/globals.css';
@@ -21,6 +22,7 @@ function App() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isProfileSetupOpen, setIsProfileSetupOpen] = useState(false);
   const [githubAuth, setGithubAuth] = useState<GitHubAuth | null>(null);
+  const [appSettings, setAppSettings] = useState<SettingsState>(loadSettings);
   const streamingResponseRef = useRef<string>('');
 
   // Load saved chats when user logs in, clear when logged out
@@ -46,13 +48,13 @@ function App() {
     }
   }, [userProfile]);
 
-  // Save chats to localStorage whenever they change (only if logged in)
+  // Save chats to localStorage whenever they change (only if logged in and save history is on)
   useEffect(() => {
-    if (userProfile) {
+    if (userProfile && appSettings.saveChatHistory) {
       const key = userProfile.githubId || userProfile.email || userProfile.username || 'unknown';
       localStorage.setItem(`chats_${key}`, JSON.stringify(chats));
     }
-  }, [chats, userProfile]);
+  }, [chats, userProfile, appSettings.saveChatHistory]);
 
   // Save active chat to localStorage (only if logged in)
   useEffect(() => {
@@ -335,7 +337,7 @@ function App() {
 
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={{ fontSize: `${appSettings.fontSize}px` }}>
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
@@ -369,16 +371,21 @@ function App() {
               isLoading={isLoading}
               userProfilePic={userProfile?.profilePic}
               onSendMessage={handleSendMessage}
+              autoScroll={appSettings.autoScroll}
+              showTimestamps={appSettings.showTimestamps}
             />
             <InputArea
               onSendMessage={handleSendMessage}
               isLoading={isLoading}
+              enterToSend={appSettings.enterToSend}
             />
           </div>
         </>
       ) : activeSection === 'settings' ? (
         <Settings
           userProfile={userProfile}
+          settings={appSettings}
+          onSettingsChange={setAppSettings}
           onLogout={async () => {
             await supabase.auth.signOut();
             localStorage.removeItem('githubAuth');

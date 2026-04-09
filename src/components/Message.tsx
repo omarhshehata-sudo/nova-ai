@@ -6,6 +6,7 @@ import '../styles/Message.css';
 interface MessageProps {
   message: MessageType;
   userProfilePic?: string;
+  showTimestamp?: boolean;
 }
 
 const NovaAvatar: React.FC = () => (
@@ -42,8 +43,13 @@ const NovaAvatar: React.FC = () => (
   </svg>
 );
 
-export const Message: React.FC<MessageProps> = ({ message, userProfilePic }) => {
+export const Message: React.FC<MessageProps> = ({ message, userProfilePic, showTimestamp = false }) => {
   const isUser = message.role === 'user';
+
+  const formatTime = (ts: number) => {
+    const d = new Date(ts);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
     <div className={`message message-${message.role}`}>
@@ -63,7 +69,10 @@ export const Message: React.FC<MessageProps> = ({ message, userProfilePic }) => 
           </div>
         </div>
         <div className="message-bubble">
-          <span className="message-role-label">{isUser ? 'You' : 'Nova'}</span>
+          <span className="message-role-label">
+            {isUser ? 'You' : 'Nova'}
+            {showTimestamp && <span className="message-timestamp">{formatTime(message.timestamp)}</span>}
+          </span>
           <div className="message-text">{message.content}</div>
         </div>
       </div>
