@@ -1,6 +1,7 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { UserProfile } from '../types';
 import { supabase } from '../supabaseClient';
+import { ConfirmDialog } from './ConfirmDialog';
 import '../styles/Settings.css';
 
 export interface SettingsState {
@@ -143,28 +144,52 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 export function Settings({ userProfile, settings, onSettingsChange, onLogout, onClearChats, onBack }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<SettingsSection>('general');
   const [saved, setSaved] = useState(false);
-  const [hasUnsaved, setHasUnsaved] = useState(false);
   const [confirmClearChats, setConfirmClearChats] = useState(false);
   const [confirmClearData, setConfirmClearData] = useState(false);
   const [passwordResetSent, setPasswordResetSent] = useState(false);
+  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
+  const [draft, setDraft] = useState<SettingsState>({ ...settings });
   const initialSettings = useRef(JSON.stringify(settings));
 
+  const hasUnsaved = JSON.stringify(draft) !== initialSettings.current;
+
+  // Live-preview theme, font size, and density changes without saving
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', draft.theme);
+    document.documentElement.style.setProperty('--app-font-size', `${draft.fontSize}px`);
+    document.documentElement.setAttribute('data-density', draft.uiDensity);
+  }, [draft.theme, draft.fontSize, draft.uiDensity]);
+
   const updateSetting = useCallback(<K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
-    const next = { ...settings, [key]: value };
-    saveSettings(next);
-    onSettingsChange(next);
+    setDraft(prev => ({ ...prev, [key]: value }));
     setSaved(false);
-    setHasUnsaved(JSON.stringify(next) !== initialSettings.current);
-  }, [settings, onSettingsChange]);
+  }, []);
 
   const handleSave = useCallback(() => {
-    saveSettings(settings);
-    onSettingsChange(settings);
-    initialSettings.current = JSON.stringify(settings);
+    saveSettings(draft);
+    onSettingsChange(draft);
+    initialSettings.current = JSON.stringify(draft);
     setSaved(true);
-    setHasUnsaved(false);
     setTimeout(() => setSaved(false), 2000);
-  }, [settings, onSettingsChange]);
+  }, [draft, onSettingsChange]);
+
+  const handleBack = useCallback(() => {
+    if (hasUnsaved) {
+      setShowLeaveWarning(true);
+    } else {
+      onBack();
+    }
+  }, [hasUnsaved, onBack]);
+
+  const handleDiscardAndLeave = useCallback(() => {
+    // Revert live preview to the last saved settings
+    const saved = JSON.parse(initialSettings.current) as SettingsState;
+    document.documentElement.setAttribute('data-theme', saved.theme);
+    document.documentElement.style.setProperty('--app-font-size', `${saved.fontSize}px`);
+    document.documentElement.setAttribute('data-density', saved.uiDensity);
+    setShowLeaveWarning(false);
+    onBack();
+  }, [onBack]);
 
   const handleChangePassword = useCallback(async () => {
     if (!userProfile?.email) return;
@@ -200,7 +225,7 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
     <div className="settings-container">
       {/* Header */}
       <div className="settings-header">
-        <button className="settings-back-btn" onClick={onBack}>
+        <button className="settings-back-btn" onClick={handleBack}>
           <ArrowLeftIcon />
           <span>Back</span>
         </button>
@@ -246,13 +271,13 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                   </div>
                   <div className="settings-theme-cards">
                     <button
-                      className={`settings-theme-card ${settings.theme === 'dark' ? 'settings-theme-card--active' : ''}`}
+                      className={`settings-theme-card ${draft.theme === 'dark' ? 'settings-theme-card--active' : ''}`}
                       onClick={() => updateSetting('theme', 'dark')}
                     >
                       <MoonIcon /> Dark
                     </button>
                     <button
-                      className={`settings-theme-card ${settings.theme === 'light' ? 'settings-theme-card--active' : ''}`}
+                      className={`settings-theme-card ${draft.theme === 'light' ? 'settings-theme-card--active' : ''}`}
                       onClick={() => updateSetting('theme', 'light')}
                     >
                       <SunIcon /> Light
@@ -273,11 +298,11 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                       min={12}
                       max={22}
                       step={1}
-                      value={settings.fontSize}
+                      value={draft.fontSize}
                       onChange={e => updateSetting('fontSize', Number(e.target.value))}
                     />
                     <span className="settings-slider-label" style={{ fontSize: 15 }}>A</span>
-                    <span className="settings-slider-value">{settings.fontSize}px</span>
+                    <span className="settings-slider-value">{draft.fontSize}px</span>
                   </div>
                 </div>
 
@@ -288,7 +313,7 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                   </div>
                   <select
                     className="settings-select"
-                    value={settings.uiDensity}
+                    value={draft.uiDensity}
                     onChange={e => updateSetting('uiDensity', e.target.value as SettingsState['uiDensity'])}
                   >
                     <option value="compact">Compact</option>
@@ -312,7 +337,7 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                     <span className="settings-row-label">Enter to Send</span>
                     <span className="settings-row-hint">Press Enter to send messages. When off, use Shift+Enter or the send button.</span>
                   </div>
-                  <Toggle checked={settings.enterToSend} onChange={v => updateSetting('enterToSend', v)} />
+                  <Toggle checked={draft.enterToSend} onChange={v => updateSetting('enterToSend', v)} />
                 </div>
               </div>
 
@@ -323,7 +348,7 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                     <span className="settings-row-label">Show Timestamps</span>
                     <span className="settings-row-hint">Display time next to each message in conversations</span>
                   </div>
-                  <Toggle checked={settings.showTimestamps} onChange={v => updateSetting('showTimestamps', v)} />
+                  <Toggle checked={draft.showTimestamps} onChange={v => updateSetting('showTimestamps', v)} />
                 </div>
 
                 <div className="settings-row">
@@ -331,7 +356,7 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                     <span className="settings-row-label">Auto-Scroll</span>
                     <span className="settings-row-hint">Automatically scroll to the latest message as new content arrives</span>
                   </div>
-                  <Toggle checked={settings.autoScroll} onChange={v => updateSetting('autoScroll', v)} />
+                  <Toggle checked={draft.autoScroll} onChange={v => updateSetting('autoScroll', v)} />
                 </div>
               </div>
 
@@ -366,7 +391,7 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                     <span className="settings-row-label">Save Chat History</span>
                     <span className="settings-row-hint">Store conversations locally on this device. Turning this off won&apos;t delete existing chats.</span>
                   </div>
-                  <Toggle checked={settings.saveChatHistory} onChange={v => updateSetting('saveChatHistory', v)} />
+                  <Toggle checked={draft.saveChatHistory} onChange={v => updateSetting('saveChatHistory', v)} />
                 </div>
               </div>
 
@@ -377,7 +402,7 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                     <span className="settings-row-label">Allow Data Usage</span>
                     <span className="settings-row-hint">Help improve Nova AI by sharing anonymized usage data. No conversations are ever shared.</span>
                   </div>
-                  <Toggle checked={settings.allowDataUsage} onChange={v => updateSetting('allowDataUsage', v)} />
+                  <Toggle checked={draft.allowDataUsage} onChange={v => updateSetting('allowDataUsage', v)} />
                 </div>
               </div>
 
@@ -501,6 +526,18 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
           )}
         </div>
       </div>
+
+      {showLeaveWarning && (
+        <ConfirmDialog
+          isOpen={true}
+          title="Unsaved Changes"
+          message="You have unsaved changes. Are you sure you want to leave? Your changes will be lost."
+          confirmText="Discard & Leave"
+          cancelText="Stay"
+          onConfirm={handleDiscardAndLeave}
+          onCancel={() => setShowLeaveWarning(false)}
+        />
+      )}
     </div>
   );
 }
