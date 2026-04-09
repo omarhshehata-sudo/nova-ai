@@ -115,9 +115,16 @@ function App() {
   }, []);
 
   // Listen for Supabase auth state changes (Google OAuth callback)
+  const hasHandledInitialSession = useRef(false);
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
+      // Skip the initial session restore — only react to fresh logins
+      if (event === 'INITIAL_SESSION') {
+        hasHandledInitialSession.current = true;
+        return;
+      }
+
+      if (event === 'SIGNED_IN' && session?.user && hasHandledInitialSession.current) {
         const savedProfile = localStorage.getItem('userProfile');
         if (savedProfile) {
           try {
@@ -323,7 +330,8 @@ function App() {
       {/* Temp logout button for testing - remove later */}
       {userProfile && (
         <button
-          onClick={() => {
+          onClick={async () => {
+            await supabase.auth.signOut();
             localStorage.removeItem('githubAuth');
             localStorage.removeItem('userProfile');
             setUserProfile(null);
