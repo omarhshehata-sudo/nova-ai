@@ -7,42 +7,130 @@
   <link rel="icon" href="/favicon.svg" />
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#0f1419;color:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,sans-serif;line-height:1.7;min-height:100vh}
-    .page{max-width:720px;margin:0 auto;padding:4rem 1.5rem 6rem}
-    .back{display:inline-flex;align-items:center;gap:.4rem;color:#00d9ff;text-decoration:none;font-size:.9rem;margin-bottom:2.5rem;transition:opacity .2s}
-    .back:hover{opacity:.7}
-    .back svg{width:16px;height:16px}
-    .badge{display:inline-block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:#a855f7;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);border-radius:100px;padding:.25rem .85rem;margin-bottom:1rem}
-    h1{font-size:2.2rem;font-weight:700;margin-bottom:.5rem;background:linear-gradient(135deg,#00d9ff,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .subtitle{color:#718096;font-size:.9rem;margin-bottom:3rem}
-    .card{background:#1a1f2e;border:1px solid #2d3748;border-radius:16px;padding:2rem;margin-bottom:1.5rem;transition:border-color .3s}
-    .card:hover{border-color:#3d4556}
-    .card h2{font-size:1.15rem;font-weight:600;color:#f5f7fa;margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem}
-    .card h2 .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
-    .icon-blue{background:rgba(99,102,241,.15);color:#818cf8}
-    .icon-cyan{background:rgba(0,217,255,.12);color:#00d9ff}
-    .icon-purple{background:rgba(168,85,247,.12);color:#a855f7}
-    .icon-green{background:rgba(72,187,120,.12);color:#48bb78}
-    .icon-orange{background:rgba(237,137,54,.12);color:#ed8936}
-    .icon-red{background:rgba(245,101,101,.12);color:#fc8181}
-    .card p,.card li{color:#a0aec0;font-size:.92rem}
-    .card ul{padding-left:1.2rem;margin-top:.5rem}
-    .card li{margin-bottom:.35rem}
-    .card li::marker{color:#3d4556}
-    .footer{text-align:center;color:#4a5568;font-size:.8rem;margin-top:4rem;padding-top:2rem;border-top:1px solid #2d3748}
-    .footer a{color:#6366f1;text-decoration:none}
-    .footer a:hover{text-decoration:underline}
+
+    body{
+      background:#0a0e17;
+      color:#f5f7fa;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,sans-serif;
+      line-height:1.7;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* Animated background orbs */
+    .bg-orbs{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+    .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;animation:float 20s ease-in-out infinite}
+    .orb-1{width:500px;height:500px;background:radial-gradient(circle,#6366f1,transparent 70%);top:-10%;left:-10%;animation-delay:0s}
+    .orb-2{width:400px;height:400px;background:radial-gradient(circle,#00d9ff,transparent 70%);top:40%;right:-8%;animation-delay:-7s}
+    .orb-3{width:350px;height:350px;background:radial-gradient(circle,#a855f7,transparent 70%);bottom:-5%;left:20%;animation-delay:-14s}
+    @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,30px) scale(.95)}}
+
+    /* Grid pattern overlay */
+    .bg-grid{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+
+    .page{position:relative;z-index:1;max-width:740px;margin:0 auto;padding:4rem 1.5rem 6rem}
+
+    /* Back link */
+    .back{display:inline-flex;align-items:center;gap:.5rem;color:#00d9ff;text-decoration:none;font-size:.88rem;font-weight:500;margin-bottom:2.5rem;padding:.5rem .9rem;border-radius:10px;background:rgba(0,217,255,.06);border:1px solid rgba(0,217,255,.12);backdrop-filter:blur(8px);transition:all .3s ease}
+    .back:hover{background:rgba(0,217,255,.12);border-color:rgba(0,217,255,.3);transform:translateX(-3px)}
+    .back svg{width:15px;height:15px}
+
+    /* Header */
+    .header{text-align:center;margin-bottom:3.5rem}
+    .badge{display:inline-block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:#a855f7;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:100px;padding:.3rem 1rem;margin-bottom:1.2rem;backdrop-filter:blur(8px)}
+    h1{font-size:2.6rem;font-weight:800;margin-bottom:.6rem;background:linear-gradient(135deg,#00d9ff 0%,#6366f1 40%,#a855f7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em}
+    .subtitle{color:#5a6578;font-size:.88rem;font-weight:400}
+
+    /* Glass cards */
+    .card{
+      position:relative;
+      background:rgba(22,28,45,.55);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:20px;
+      padding:2rem 2.2rem;
+      margin-bottom:1.25rem;
+      transition:all .4s cubic-bezier(.4,0,.2,1);
+      overflow:hidden;
+    }
+    .card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.1) 30%,rgba(255,255,255,.1) 70%,transparent);
+    }
+    .card:hover{
+      border-color:rgba(255,255,255,.12);
+      transform:translateY(-2px);
+      box-shadow:0 8px 32px rgba(0,0,0,.3),0 0 60px rgba(99,102,241,.06);
+    }
+
+    .card h2{font-size:1.1rem;font-weight:650;color:#f0f2f5;margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem}
+    .card h2 .icon{
+      width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;
+      backdrop-filter:blur(8px);
+    }
+    .icon-blue{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.2)}
+    .icon-cyan{background:rgba(0,217,255,.1);border:1px solid rgba(0,217,255,.18)}
+    .icon-purple{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.18)}
+    .icon-green{background:rgba(72,187,120,.1);border:1px solid rgba(72,187,120,.18)}
+    .icon-orange{background:rgba(237,137,54,.1);border:1px solid rgba(237,137,54,.18)}
+    .icon-red{background:rgba(245,101,101,.1);border:1px solid rgba(245,101,101,.18)}
+
+    .card p,.card li{color:#94a3b8;font-size:.9rem;line-height:1.75}
+    .card ul{padding-left:1.25rem;margin-top:.5rem}
+    .card li{margin-bottom:.4rem}
+    .card li::marker{color:rgba(99,102,241,.5)}
+    .card strong{color:#cbd5e1;font-weight:600}
+    .card a{color:#00d9ff;text-decoration:none;border-bottom:1px solid rgba(0,217,255,.2);transition:border-color .2s}
+    .card a:hover{border-color:#00d9ff}
+
+    /* Divider line */
+    .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.2),rgba(168,85,247,.2),transparent);margin:2.5rem 0;border:none}
+
+    /* Footer */
+    .footer{text-align:center;color:#3d4556;font-size:.8rem;margin-top:3rem;padding-top:2rem}
+    .footer a{color:#6366f1;text-decoration:none;transition:color .2s}
+    .footer a:hover{color:#818cf8}
+    .footer .links{display:flex;justify-content:center;gap:1.5rem;margin-top:.6rem}
+    .footer .sep{color:#2d3748}
+
+    /* Scroll animation */
+    .card{opacity:0;transform:translateY(20px);animation:fadeUp .6s ease forwards}
+    .card:nth-child(1){animation-delay:.05s}
+    .card:nth-child(2){animation-delay:.1s}
+    .card:nth-child(3){animation-delay:.15s}
+    .card:nth-child(4){animation-delay:.2s}
+    .card:nth-child(5){animation-delay:.25s}
+    .card:nth-child(6){animation-delay:.3s}
+    .card:nth-child(7){animation-delay:.35s}
+    @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+    @media(max-width:600px){
+      .page{padding:2.5rem 1rem 4rem}
+      h1{font-size:2rem}
+      .card{padding:1.5rem 1.4rem;border-radius:16px}
+    }
   </style>
 </head>
 <body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="bg-grid"></div>
+
   <div class="page">
     <a href="/" class="back">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
       Back to Nova AI
     </a>
-    <div class="badge">Legal</div>
-    <h1>Privacy Policy</h1>
-    <p class="subtitle">Last updated — April 9, 2026</p>
+
+    <div class="header">
+      <div class="badge">Legal</div>
+      <h1>Privacy Policy</h1>
+      <p class="subtitle">Last updated — April 9, 2026</p>
+    </div>
 
     <div class="card">
       <h2><span class="icon icon-blue">📋</span> Overview</h2>
@@ -54,8 +142,8 @@
       <ul>
         <li><strong>Account information</strong> — email address, display name, and profile picture when you sign up</li>
         <li><strong>Authentication data</strong> — OAuth tokens from GitHub or Google used solely to verify your identity</li>
-        <li><strong>Chat data</strong> — conversations are stored locally in your browser's localStorage and are not transmitted to our servers</li>
-        <li><strong>Usage data</strong> — basic analytics such as page views may be collected by our hosting provider (Vercel)</li>
+        <li><strong>Chat data</strong> — conversations are stored locally in your browser and are not transmitted to our servers</li>
+        <li><strong>Usage data</strong> — basic analytics such as page views may be collected by our hosting provider</li>
       </ul>
     </div>
 
@@ -73,6 +161,8 @@
       <h2><span class="icon icon-green">🔒</span> Data Storage &amp; Security</h2>
       <p>Your chat conversations are stored exclusively in your browser's localStorage — we do not store them on any server. Authentication is handled securely through Supabase and third-party OAuth providers (GitHub, Google). We use industry-standard practices to protect your data.</p>
     </div>
+
+    <hr class="divider" />
 
     <div class="card">
       <h2><span class="icon icon-orange">🤝</span> Third-Party Services</h2>
@@ -96,11 +186,16 @@
 
     <div class="card">
       <h2><span class="icon icon-blue">✉️</span> Contact</h2>
-      <p>If you have any questions about this policy, you can reach us through our GitHub repository at <a href="https://github.com/omarhshehata-sudo/nova-ai" style="color:#00d9ff;text-decoration:none">github.com/omarhshehata-sudo/nova-ai</a>.</p>
+      <p>If you have any questions about this policy, reach us through our GitHub repository at <a href="https://github.com/omarhshehata-sudo/nova-ai">github.com/omarhshehata-sudo/nova-ai</a>.</p>
     </div>
 
     <div class="footer">
-      <p>© 2026 Nova AI · <a href="/terms">Terms of Service</a> · <a href="/privacy">Privacy Policy</a></p>
+      <p>© 2026 Nova AI</p>
+      <div class="links">
+        <a href="/terms">Terms of Service</a>
+        <span class="sep">·</span>
+        <a href="/privacy">Privacy Policy</a>
+      </div>
     </div>
   </div>
 </body>
