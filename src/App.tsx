@@ -7,6 +7,7 @@ import { ChatHistory } from './components/ChatHistory';
 import { AuthModal } from './components/AuthModal';
 import { ProfileSetup } from './components/ProfileSetup';
 import { createNewChat, createMessage, generateChatTitle, simulateStreamingResponse } from './utils';
+import { supabase } from './supabaseClient';
 import './styles/globals.css';
 import './styles/App.css';
 
@@ -194,7 +195,7 @@ function App() {
     setIsAuthModalOpen(true);
   }, []);
 
-  const handleAuthSuccess = useCallback(() => {
+  const handleAuthSuccess = useCallback(async () => {
     // Check current session profile
     const savedProfile = localStorage.getItem('userProfile');
     if (savedProfile) {
@@ -206,14 +207,13 @@ function App() {
       return;
     }
 
-    // Check for a previously saved profile by user ID
+    // Check for GitHub auth first
     const savedAuth = localStorage.getItem('githubAuth');
     if (savedAuth) {
       try {
         const auth = JSON.parse(savedAuth) as GitHubAuth;
         setGithubAuth(auth);
 
-        // Look up profile saved from a previous session
         const previousProfile = localStorage.getItem(`userProfile_github_${auth.user.id}`);
         if (previousProfile) {
           const profile = JSON.parse(previousProfile) as UserProfile;
@@ -224,11 +224,26 @@ function App() {
       } catch (err) {
         console.error('Failed to parse auth data:', err);
       }
+      setIsProfileSetupOpen(true);
+      return;
+    }
+
+    // Check for Supabase email auth
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.email) {
+      const previousProfile = localStorage.getItem(`userProfile_email_${user.email}`);
+      if (previousProfile) {
+        const profile = JSON.parse(previousProfile) as UserProfile;
+        localStorage.setItem('userProfile', JSON.stringify(profile));
+        setUserProfile(profile);
+        return;
+      }
+      // No profile yet — set dummy githubAuth so ProfileSetup works
+      setGithubAuth({ token: '', user: { login: user.email, avatar_url: '', id: 0 } });
     } else {
       setGithubAuth({ token: '', user: { login: 'User', avatar_url: '', id: 0 } });
     }
 
-    // No saved profile found - open profile setup
     setIsProfileSetupOpen(true);
   }, []);
 

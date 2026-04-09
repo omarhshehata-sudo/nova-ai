@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import type { UserProfile, GitHubAuth } from '../types';
+import { supabase } from '../supabaseClient';
 import '../styles/ProfileSetup.css';
 
 interface ProfileSetupProps {
@@ -179,10 +180,16 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
       };
 
       localStorage.setItem('userProfile', JSON.stringify(profile));
-      // Also save by user ID so profile survives logout
+      // Save by GitHub user ID so profile survives logout
       if (githubAuth.user.id) {
         localStorage.setItem(`userProfile_github_${githubAuth.user.id}`, JSON.stringify(profile));
       }
+      // Also save by email if logged in via Supabase
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user?.email) {
+          localStorage.setItem(`userProfile_email_${user.email}`, JSON.stringify(profile));
+        }
+      });
       setLoading(false);
       onComplete(profile);
     }, 500);
