@@ -122,6 +122,22 @@ function App() {
         // If already have a profile loaded, don't override
         const existingProfile = localStorage.getItem('userProfile');
         if (existingProfile) {
+          try {
+            // Backfill email on old profiles that are missing it
+            const profile = JSON.parse(existingProfile) as UserProfile;
+            const email = session.user.email;
+            if (email && !profile.email) {
+              profile.email = email;
+              // Remove fake githubId "0" from old Supabase profiles
+              if (profile.githubId === '0') {
+                delete profile.githubId;
+                delete profile.githubUsername;
+              }
+              localStorage.setItem('userProfile', JSON.stringify(profile));
+              localStorage.setItem(`userProfile_email_${email}`, JSON.stringify(profile));
+              setUserProfile(profile);
+            }
+          } catch { /* ignore */ }
           return;
         }
 
@@ -131,7 +147,17 @@ function App() {
           const previousProfile = localStorage.getItem(`userProfile_email_${email}`);
           if (previousProfile) {
             const profile = JSON.parse(previousProfile) as UserProfile;
+            // Ensure email is on the profile
+            if (!profile.email) {
+              profile.email = email;
+            }
+            // Remove fake githubId "0" from old Supabase profiles
+            if (profile.githubId === '0') {
+              delete profile.githubId;
+              delete profile.githubUsername;
+            }
             localStorage.setItem('userProfile', JSON.stringify(profile));
+            localStorage.setItem(`userProfile_email_${email}`, JSON.stringify(profile));
             setUserProfile(profile);
             return;
           }
