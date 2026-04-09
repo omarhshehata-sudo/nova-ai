@@ -59,12 +59,28 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading, userPro
               <div className="message message-assistant">
                 <div className="message-container">
                   <div className="message-avatar">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                      <rect x="2" y="2" width="20" height="20" rx="2" fill="#10A37F"/>
-                      <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" fill="white"/>
-                    </svg>
+                    <div className="avatar-glow-ring" />
+                    <div className="avatar-inner">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="nova-avatar-logo">
+                        <defs>
+                          <radialGradient id="novaGlowLoading" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#00d9ff" stopOpacity="0.6" />
+                            <stop offset="100%" stopColor="#a855f7" stopOpacity="0.1" />
+                          </radialGradient>
+                          <linearGradient id="novaGradientLoading" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#00d9ff" />
+                            <stop offset="100%" stopColor="#6366f1" />
+                          </linearGradient>
+                        </defs>
+                        <circle cx="12" cy="12" r="11" fill="url(#novaGlowLoading)" />
+                        <circle cx="12" cy="12" r="10.5" stroke="url(#novaGradientLoading)" strokeWidth="1.4" opacity="1" />
+                        <path d="M 7 18 L 7 6 M 7 6 L 17 18 M 17 18 L 17 6" stroke="url(#novaGradientLoading)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="17" cy="5" r="1.3" fill="#00d9ff" />
+                      </svg>
+                    </div>
                   </div>
-                  <div className="message-content">
+                  <div className="message-bubble">
+                    <span className="message-role-label">Nova</span>
                     <div className="typing-indicator">
                       <span></span>
                       <span></span>
