@@ -25,6 +25,11 @@ function App() {
   const [appSettings, setAppSettings] = useState<SettingsState>(loadSettings);
   const streamingResponseRef = useRef<string>('');
 
+  // Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', appSettings.theme);
+  }, [appSettings.theme]);
+
   // Load saved chats when user logs in, clear when logged out
   useEffect(() => {
     if (userProfile) {

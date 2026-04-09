@@ -361,3 +361,69 @@
     padding: 12px 8px;
   }
 }
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] .sidebar-chatgpt {
+  background: linear-gradient(180deg, #f8f9fb 0%, #eef2f7 50%, #f8f9fb 100%);
+  border-right: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .sidebar-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .sidebar-nav-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .sidebar-icon-chatgpt:hover {
+  background: rgba(8, 145, 178, 0.06);
+  border-color: rgba(8, 145, 178, 0.2);
+  box-shadow: 0 0 8px rgba(8, 145, 178, 0.06);
+}
+
+[data-theme="light"] .sidebar-icon-chatgpt.active {
+  background: rgba(8, 145, 178, 0.08);
+  border-color: rgba(8, 145, 178, 0.3);
+  box-shadow: 0 0 10px rgba(8, 145, 178, 0.06);
+}
+
+[data-theme="light"] .sidebar-auth-btn-chatgpt {
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.08) 0%, rgba(99, 102, 241, 0.06) 100%);
+  border-color: rgba(8, 145, 178, 0.2);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .sidebar-auth-btn-chatgpt:hover {
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.14) 0%, rgba(99, 102, 241, 0.1) 100%);
+  border-color: rgba(8, 145, 178, 0.35);
+  box-shadow: 0 0 10px rgba(8, 145, 178, 0.08);
+}
+
+[data-theme="light"] .profile-card {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .profile-card:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(8, 145, 178, 0.2);
+  box-shadow: 0 0 12px rgba(8, 145, 178, 0.06);
+}
+
+[data-theme="light"] .profile-card-avatar {
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .profile-card-name {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .profile-card-plan {
+  color: rgba(100, 116, 139, 0.7);
+}
+
+[data-theme="light"] .profile-card-status-dot {
+  border-color: #f8f9fb;
+}

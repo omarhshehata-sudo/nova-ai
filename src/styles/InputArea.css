@@ -248,3 +248,55 @@
     padding: 5px 6px;
   }
 }
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] .input-dock {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04) inset;
+}
+
+[data-theme="light"] .input-dock::before {
+  background: linear-gradient(90deg, transparent, rgba(8, 145, 178, 0.1), transparent);
+}
+
+[data-theme="light"] .input-dock--focused,
+[data-theme="light"] .input-dock:focus-within {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(8, 145, 178, 0.25);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 0 16px rgba(8, 145, 178, 0.04);
+}
+
+[data-theme="light"] .input-field {
+  color: #1a1a2e;
+  caret-color: #0891b2;
+}
+
+[data-theme="light"] .input-field::placeholder {
+  color: rgba(148, 163, 184, 0.55);
+}
+
+[data-theme="light"] .input-field::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .input-icon-btn--subtle {
+  background: rgba(0, 0, 0, 0.03);
+  color: rgba(100, 116, 139, 0.6);
+}
+
+[data-theme="light"] .input-icon-btn--subtle:hover {
+  color: #0891b2;
+  background: rgba(8, 145, 178, 0.06);
+  border-color: rgba(8, 145, 178, 0.1);
+  box-shadow: 0 0 8px rgba(8, 145, 178, 0.06);
+}
+
+[data-theme="light"] .input-send-btn:disabled {
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(148, 163, 184, 0.4);
+}
+
+[data-theme="light"] .input-disclaimer {
+  color: rgba(100, 116, 139, 0.35);
+}

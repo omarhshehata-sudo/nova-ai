@@ -122,3 +122,17 @@ body {
   background: var(--accent-cyan);
   color: var(--bg-darkest);
 }
+
+/* Light theme scrollbar */
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+[data-theme="light"] ::selection {
+  background: #0891b2;
+  color: #ffffff;
+}

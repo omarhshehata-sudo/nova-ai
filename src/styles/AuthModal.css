@@ -457,3 +457,41 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] .auth-modal-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] .auth-modal-container {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .auth-input {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .auth-input::placeholder {
+  color: rgba(100, 116, 139, 0.5);
+}
+
+[data-theme="light"] .auth-input:focus {
+  border-color: rgba(8, 145, 178, 0.4);
+  background: rgba(8, 145, 178, 0.02);
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.06);
+}
+
+[data-theme="light"] .auth-oauth-btn {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .auth-oauth-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.18);
+}

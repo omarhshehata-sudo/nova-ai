@@ -351,3 +351,85 @@
     font-size: 14px;
   }
 }
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] .message-user .avatar-inner {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.75) 0%, rgba(147, 51, 234, 0.65) 100%);
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .message-assistant .avatar-inner {
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.14) 0%, rgba(99, 102, 241, 0.08) 100%);
+  border-color: rgba(8, 145, 178, 0.25);
+  box-shadow: 0 2px 10px rgba(8, 145, 178, 0.08);
+}
+
+[data-theme="light"] .message-user .message-bubble {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(147, 51, 234, 0.05) 100%);
+  border-color: rgba(99, 102, 241, 0.15);
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.04);
+}
+
+[data-theme="light"] .message-user .message-bubble:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.11) 0%, rgba(147, 51, 234, 0.07) 100%);
+  border-color: rgba(99, 102, 241, 0.22);
+}
+
+[data-theme="light"] .message-assistant .message-bubble {
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.04) 0%, rgba(241, 243, 245, 0.6) 100%);
+  border-color: rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .message-assistant .message-bubble:hover {
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.06) 0%, rgba(241, 243, 245, 0.8) 100%);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .message-user .message-text {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .message-assistant .message-text {
+  color: #334155;
+}
+
+[data-theme="light"] .message-user .message-role-label {
+  color: rgba(99, 102, 241, 0.75);
+}
+
+[data-theme="light"] .message-assistant .message-role-label {
+  color: rgba(8, 145, 178, 0.7);
+}
+
+[data-theme="light"] .message-assistant .message-text code {
+  background: rgba(241, 243, 245, 0.9);
+  color: #0891b2;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .message-assistant .message-text pre {
+  background: linear-gradient(180deg, rgba(248, 249, 251, 0.95) 0%, rgba(241, 243, 245, 0.9) 100%);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #334155;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .message-assistant .message-text pre code {
+  color: #0891b2;
+}
+
+[data-theme="light"] .message-text a {
+  color: #0891b2;
+}
+
+[data-theme="light"] .message-text a:hover {
+  color: #0e7490;
+  border-bottom-color: rgba(8, 145, 178, 0.5);
+}
+
+[data-theme="light"] .loading-dot {
+  background: rgba(8, 145, 178, 0.7);
+  box-shadow: 0 0 6px rgba(8, 145, 178, 0.25);
+}

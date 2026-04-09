@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { UserProfile } from '../types';
 import { supabase } from '../supabaseClient';
 import '../styles/Settings.css';
@@ -103,6 +103,22 @@ const LogOutIcon = () => (
   </svg>
 );
 
+const SunIcon = () => (
+  <svg className="settings-theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="5" />
+    <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+    <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg className="settings-theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
+
 const sections: { id: SettingsSection; label: string; icon: React.ReactNode }[] = [
   { id: 'general', label: 'General', icon: <GearIcon /> },
   { id: 'chat', label: 'Chat', icon: <ChatIcon /> },
@@ -127,21 +143,26 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 export function Settings({ userProfile, settings, onSettingsChange, onLogout, onClearChats, onBack }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<SettingsSection>('general');
   const [saved, setSaved] = useState(false);
+  const [hasUnsaved, setHasUnsaved] = useState(false);
   const [confirmClearChats, setConfirmClearChats] = useState(false);
   const [confirmClearData, setConfirmClearData] = useState(false);
   const [passwordResetSent, setPasswordResetSent] = useState(false);
+  const initialSettings = useRef(JSON.stringify(settings));
 
   const updateSetting = useCallback(<K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
     const next = { ...settings, [key]: value };
     saveSettings(next);
     onSettingsChange(next);
     setSaved(false);
+    setHasUnsaved(JSON.stringify(next) !== initialSettings.current);
   }, [settings, onSettingsChange]);
 
   const handleSave = useCallback(() => {
     saveSettings(settings);
     onSettingsChange(settings);
+    initialSettings.current = JSON.stringify(settings);
     setSaved(true);
+    setHasUnsaved(false);
     setTimeout(() => setSaved(false), 2000);
   }, [settings, onSettingsChange]);
 
@@ -183,10 +204,16 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
           <ArrowLeftIcon />
           <span>Back</span>
         </button>
-        <h1 className="settings-title">Settings</h1>
-        <button className={`settings-save-btn ${saved ? 'settings-save-btn--saved' : ''}`} onClick={handleSave}>
-          {saved ? <><CheckIcon /> Saved</> : 'Save Changes'}
-        </button>
+        <div className="settings-title-block">
+          <h1 className="settings-title">Settings</h1>
+          <span className="settings-subtitle">Customize your experience</span>
+        </div>
+        <div className="settings-header-actions">
+          {hasUnsaved && <span className="settings-unsaved-dot" title="Unsaved changes" />}
+          <button className={`settings-save-btn ${saved ? 'settings-save-btn--saved' : ''}`} onClick={handleSave}>
+            {saved ? <><CheckIcon /> <span>Saved</span></> : <span>Save Changes</span>}
+          </button>
+        </div>
       </div>
 
       <div className="settings-body">
@@ -217,23 +244,29 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                     <span className="settings-row-label">Theme</span>
                     <span className="settings-row-hint">Choose your preferred color scheme</span>
                   </div>
-                  <select
-                    className="settings-select"
-                    value={settings.theme}
-                    onChange={e => updateSetting('theme', e.target.value as 'dark' | 'light')}
-                  >
-                    <option value="dark">Dark</option>
-                    <option value="light">Light (coming soon)</option>
-                  </select>
+                  <div className="settings-theme-cards">
+                    <button
+                      className={`settings-theme-card ${settings.theme === 'dark' ? 'settings-theme-card--active' : ''}`}
+                      onClick={() => updateSetting('theme', 'dark')}
+                    >
+                      <MoonIcon /> Dark
+                    </button>
+                    <button
+                      className={`settings-theme-card ${settings.theme === 'light' ? 'settings-theme-card--active' : ''}`}
+                      onClick={() => updateSetting('theme', 'light')}
+                    >
+                      <SunIcon /> Light
+                    </button>
+                  </div>
                 </div>
 
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <span className="settings-row-label">Font Size</span>
-                    <span className="settings-row-hint">{settings.fontSize}px</span>
+                    <span className="settings-row-hint">Adjust the text size across the app</span>
                   </div>
                   <div className="settings-slider-wrap">
-                    <span className="settings-slider-label">12</span>
+                    <span className="settings-slider-label">A</span>
                     <input
                       type="range"
                       className="settings-slider"
@@ -243,7 +276,8 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                       value={settings.fontSize}
                       onChange={e => updateSetting('fontSize', Number(e.target.value))}
                     />
-                    <span className="settings-slider-label">22</span>
+                    <span className="settings-slider-label" style={{ fontSize: 15 }}>A</span>
+                    <span className="settings-slider-value">{settings.fontSize}px</span>
                   </div>
                 </div>
 
