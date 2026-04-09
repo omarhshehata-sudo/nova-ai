@@ -11,8 +11,17 @@ import './styles/globals.css';
 import './styles/App.css';
 
 function App() {
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [activeChat, setActiveChat] = useState<string | null>(null);
+  const [chats, setChats] = useState<Chat[]>(() => {
+    try {
+      const saved = localStorage.getItem('chats');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [activeChat, setActiveChat] = useState<string | null>(() => {
+    return localStorage.getItem('activeChat') || null;
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [activeSection, setActiveSection] = useState('chat');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -20,6 +29,20 @@ function App() {
   const [isProfileSetupOpen, setIsProfileSetupOpen] = useState(false);
   const [githubAuth, setGithubAuth] = useState<GitHubAuth | null>(null);
   const streamingResponseRef = useRef<string>('');
+
+  // Save chats to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('chats', JSON.stringify(chats));
+  }, [chats]);
+
+  // Save active chat to localStorage
+  useEffect(() => {
+    if (activeChat) {
+      localStorage.setItem('activeChat', activeChat);
+    } else {
+      localStorage.removeItem('activeChat');
+    }
+  }, [activeChat]);
 
   // Check for existing profile on mount
   useEffect(() => {
