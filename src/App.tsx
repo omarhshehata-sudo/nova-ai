@@ -202,6 +202,32 @@ function App() {
         githubAuth={githubAuth}
         onComplete={handleProfileSetupComplete}
       />
+      {/* Temp logout button for testing - remove later */}
+      {userProfile && (
+        <button
+          onClick={() => {
+            localStorage.removeItem('githubAuth');
+            localStorage.removeItem('userProfile');
+            setUserProfile(null);
+            setGithubAuth(null);
+          }}
+          style={{
+            position: 'fixed',
+            bottom: '10px',
+            right: '10px',
+            zIndex: 9999,
+            padding: '6px 12px',
+            background: '#ff4444',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '12px',
+          }}
+        >
+          Logout (temp)
+        </button>
+      )}
       <Sidebar
         activeSection={activeSection}
         onSectionChange={handleSectionChange}
