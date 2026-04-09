@@ -203,8 +203,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   // OAuth handlers
   const handleOAuth = async (provider: string) => {
     if (provider.toLowerCase() === 'apple') {
-      setError('');
-      setSuccessMessage('Apple sign-in is not available at this time. Please use another method.');
+      setSuccessMessage('');
+      setError('Apple sign-in is not available at this time. Please use another method.');
       return;
     }
 
