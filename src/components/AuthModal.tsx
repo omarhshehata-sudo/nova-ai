@@ -401,6 +401,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
             </button>
             <h2>Create Account</h2>
             <p>Choose your preferred sign-up method</p>
+            {error && <div className="auth-error">{error}</div>}
             <div className="signup-methods">
               <button
                 className="signup-method-btn"
