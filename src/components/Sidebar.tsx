@@ -14,11 +14,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onAuthClick,
   userProfile,
 }) => {
-  const handleLogout = () => {
-    localStorage.removeItem('githubAuth');
-    localStorage.removeItem('userProfile');
-    window.location.reload();
-  };
   return (
     <div className="sidebar-chatgpt">
       <div className="sidebar-header">
@@ -111,9 +106,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <img src={userProfile.profilePic} alt={userProfile.username} className="user-profile-pic" />
             <div className="user-profile-info">
               <p className="user-profile-name">{userProfile.username}</p>
-              <button className="logout-btn" onClick={handleLogout}>
-                Logout
-              </button>
             </div>
           </div>
         ) : (

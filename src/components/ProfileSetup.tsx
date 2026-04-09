@@ -22,10 +22,19 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
   const [zoom, setZoom] = useState(1);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const zoomRef = useRef(zoom);
+  const offsetXRef = useRef(offsetX);
+  const offsetYRef = useRef(offsetY);
+
+  zoomRef.current = zoom;
+  offsetXRef.current = offsetX;
+  offsetYRef.current = offsetY;
 
   const renderCroppedImage = useCallback((img: string, z: number, ox: number, oy: number) => {
     const canvas = canvasRef.current;
@@ -41,13 +50,11 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
 
       ctx.clearRect(0, 0, 200, 200);
 
-      // Draw circular clip
       ctx.beginPath();
       ctx.arc(100, 100, 100, 0, Math.PI * 2);
       ctx.closePath();
       ctx.clip();
 
-      // Calculate dimensions
       const size = Math.min(image.width, image.height);
       const srcX = (image.width - size) / 2;
       const srcY = (image.height - size) / 2;
@@ -62,6 +69,35 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
     };
     image.src = img;
   }, []);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (useDefault || !rawImage) return;
+    e.preventDefault();
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - offsetX, y: e.clientY - offsetY });
+  };
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging || !rawImage) return;
+    const newX = e.clientX - dragStart.x;
+    const newY = e.clientY - dragStart.y;
+    setOffsetX(newX);
+    setOffsetY(newY);
+    renderCroppedImage(rawImage, zoomRef.current, newX, newY);
+  }, [isDragging, dragStart, rawImage, renderCroppedImage]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (useDefault || !rawImage) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const newZoom = Math.max(0.5, Math.min(3, zoomRef.current + delta));
+    setZoom(newZoom);
+    renderCroppedImage(rawImage, newZoom, offsetXRef.current, offsetYRef.current);
+  }, [useDefault, rawImage, renderCroppedImage]);
 
   if (!isOpen || !githubAuth) return null;
 
@@ -160,67 +196,25 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
           {/* Profile Picture Section */}
           <div className="profile-pic-section">
             <h3>Profile Picture</h3>
-            <div className="profile-pic-preview">
+            <div
+              className={`profile-pic-preview ${!useDefault && rawImage ? 'draggable' : ''}`}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onWheel={handleWheel}
+            >
               <img
                 src={profilePic}
                 alt="Profile preview"
                 className="profile-pic-img"
+                draggable={false}
               />
               <canvas ref={canvasRef} style={{ display: 'none' }} />
             </div>
 
-            {/* Adjustment controls - only show when custom image uploaded */}
             {!useDefault && rawImage && (
-              <div className="pic-adjust-controls">
-                <div className="adjust-row">
-                  <label>Zoom</label>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="3"
-                    step="0.05"
-                    value={zoom}
-                    onChange={(e) => {
-                      const z = parseFloat(e.target.value);
-                      setZoom(z);
-                      renderCroppedImage(rawImage, z, offsetX, offsetY);
-                    }}
-                    className="adjust-slider"
-                  />
-                </div>
-                <div className="adjust-row">
-                  <label>Left / Right</label>
-                  <input
-                    type="range"
-                    min="-100"
-                    max="100"
-                    step="1"
-                    value={offsetX}
-                    onChange={(e) => {
-                      const ox = parseInt(e.target.value);
-                      setOffsetX(ox);
-                      renderCroppedImage(rawImage, zoom, ox, offsetY);
-                    }}
-                    className="adjust-slider"
-                  />
-                </div>
-                <div className="adjust-row">
-                  <label>Up / Down</label>
-                  <input
-                    type="range"
-                    min="-100"
-                    max="100"
-                    step="1"
-                    value={offsetY}
-                    onChange={(e) => {
-                      const oy = parseInt(e.target.value);
-                      setOffsetY(oy);
-                      renderCroppedImage(rawImage, zoom, offsetX, oy);
-                    }}
-                    className="adjust-slider"
-                  />
-                </div>
-              </div>
+              <p className="drag-hint">Drag to reposition • Scroll to zoom</p>
             )}
 
             <div className="profile-pic-options">
