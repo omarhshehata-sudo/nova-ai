@@ -7,21 +7,66 @@ interface ChatAreaProps {
   messages: MessageType[];
   isLoading: boolean;
   userProfilePic?: string;
+  onSendMessage?: (message: string) => void;
 }
 
-export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading, userProfilePic }) => {
+/* ===== SVG ICONS FOR FEATURE CARDS ===== */
+const IconCreate = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+  </svg>
+);
+const IconAnalyze = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 21H4.6C4.03995 21 3.75992 21 3.54601 20.891C3.35785 20.7951 3.20487 20.6422 3.10899 20.454C3 20.2401 3 19.9601 3 19.4V3" />
+    <path d="M7 14l4-4 4 4 6-6" />
+  </svg>
+);
+const IconWrite = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <polyline points="10 9 9 9 8 9" />
+  </svg>
+);
+const IconBrainstorm = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 12 18.469c-.386-.866-.94-1.553-1.535-2.097L9.88 15.79z" />
+  </svg>
+);
+
+const IconArrow = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+  </svg>
+);
+
+export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading, userProfilePic, onSendMessage }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const suggestions = [
-    { icon: '✏️', title: 'Create', desc: 'A detailed plan for learning' },
-    { icon: '🔍', title: 'Analyze', desc: 'Pros and cons of remote work' },
-    { icon: '📝', title: 'Write', desc: 'A poem about spring' },
-    { icon: '💡', title: 'Brainstorm', desc: 'Ideas for a new product' },
+  const features = [
+    { icon: <IconCreate />, title: 'Create', desc: 'Build plans, outlines & strategies', color: 'purple' },
+    { icon: <IconAnalyze />, title: 'Analyze', desc: 'Break down ideas & compare options', color: 'cyan' },
+    { icon: <IconWrite />, title: 'Write', desc: 'Draft content, stories & emails', color: 'blue' },
+    { icon: <IconBrainstorm />, title: 'Brainstorm', desc: 'Generate fresh ideas & concepts', color: 'teal' },
   ];
+
+  const quickPrompts = [
+    'Explain quantum computing simply',
+    'Write a professional email template',
+    'Compare React vs Vue for a startup',
+    'Create a 30-day fitness plan',
+  ];
+
+  const handlePromptClick = (prompt: string) => {
+    onSendMessage?.(prompt);
+  };
 
   return (
     <div className="chat-area-chatgpt">
@@ -32,24 +77,55 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading, userPro
       )}
       <div className="chat-content-chatgpt">
         {messages.length === 0 ? (
-          <>
-            {/* Hero Section */}
-            <div className="hero-section-chatgpt">
+          <div className="hero-section-chatgpt">
+            {/* Ambient glow orbs */}
+            <div className="hero-orb hero-orb-1" />
+            <div className="hero-orb hero-orb-2" />
+            <div className="hero-orb hero-orb-3" />
+
+            {/* Title block */}
+            <div className="hero-title-block">
               <h1 className="hero-title">Nova AI</h1>
               <p className="hero-subtitle">Your ideas, powered instantly.</p>
+            </div>
 
-              {/* Suggestion Cards */}
-              <div className="suggestions-grid-chatgpt">
-                {suggestions.map((suggestion, index) => (
-                  <button key={index} className="suggestion-card-chatgpt">
-                    <span className="suggestion-icon">{suggestion.icon}</span>
-                    <span className="suggestion-title">{suggestion.title}</span>
-                    <span className="suggestion-desc">{suggestion.desc}</span>
+            {/* Feature cards */}
+            <div className="suggestions-grid-chatgpt">
+              {features.map((feature, index) => (
+                <button
+                  key={index}
+                  className={`suggestion-card-chatgpt card-${feature.color}`}
+                  style={{ animationDelay: `${200 + index * 80}ms` }}
+                >
+                  <div className="card-icon-wrap">
+                    {feature.icon}
+                  </div>
+                  <div className="card-text">
+                    <span className="suggestion-title">{feature.title}</span>
+                    <span className="suggestion-desc">{feature.desc}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Quick prompts */}
+            <div className="quick-prompts">
+              <span className="quick-prompts-label">Try asking</span>
+              <div className="quick-prompts-list">
+                {quickPrompts.map((prompt, index) => (
+                  <button
+                    key={index}
+                    className="quick-prompt-chip"
+                    style={{ animationDelay: `${500 + index * 60}ms` }}
+                    onClick={() => handlePromptClick(prompt)}
+                  >
+                    <span>{prompt}</span>
+                    <IconArrow />
                   </button>
                 ))}
               </div>
             </div>
-          </>
+          </div>
         ) : (
           <div className="messages-container-chatgpt">
             {messages.map((msg) => (

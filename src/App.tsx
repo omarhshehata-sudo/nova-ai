@@ -393,6 +393,7 @@ function App() {
               messages={currentChat?.messages || []}
               isLoading={isLoading}
               userProfilePic={userProfile?.profilePic}
+              onSendMessage={handleSendMessage}
             />
             <InputArea
               onSendMessage={handleSendMessage}
