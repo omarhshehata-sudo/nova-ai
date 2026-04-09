@@ -2,12 +2,12 @@
 .input-area {
   background: transparent;
   border-top: none;
-  padding: 20px 40px 20px;
+  padding: var(--density-padding, 20px) 40px var(--density-padding, 20px);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--density-gap, 10px);
   width: 100%;
   box-sizing: border-box;
 }

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { Chat } from '../types';
-import { IconTrash, IconSearch, IconNewChat } from './Icons';
-import { ConfirmDialog } from './ConfirmDialog';
+import { IconSearch, IconNewChat } from './Icons';
+import { ChatContextMenu } from './ChatContextMenu';
 import '../styles/ChatHistory.css';
 
 interface ChatHistoryProps {
@@ -9,6 +9,9 @@ interface ChatHistoryProps {
   activeChat: string | null;
   onSelectChat: (chatId: string) => void;
   onDeleteChat?: (chatId: string) => void;
+  onRenameChat?: (chatId: string, newTitle: string) => void;
+  onPinChat?: (chatId: string) => void;
+  onArchiveChat?: (chatId: string) => void;
   onNewChat?: () => void;
 }
 
@@ -31,39 +34,129 @@ const formatRelative = (ts: number): string => {
   return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 };
 
+/* Three-dots icon */
+const DotsIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="5" r="2" />
+    <circle cx="12" cy="12" r="2" />
+    <circle cx="12" cy="19" r="2" />
+  </svg>
+);
+
+/* Pin indicator icon */
+const PinSmallIcon = () => (
+  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="17" x2="12" y2="22" />
+    <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24z" />
+  </svg>
+);
+
+/* Archive icon for tab */
+const ArchiveTabIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="21 8 21 21 3 21 3 8" />
+    <rect x="1" y="3" width="22" height="5" />
+    <line x1="10" y1="12" x2="14" y2="12" />
+  </svg>
+);
+
+type ViewMode = 'chats' | 'archived';
+
 export const ChatHistory: React.FC<ChatHistoryProps> = ({
   chats,
   activeChat,
   onSelectChat,
   onDeleteChat,
+  onRenameChat,
+  onPinChat,
+  onArchiveChat,
   onNewChat,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-  const [chatToDelete, setChatToDelete] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('chats');
+  const [contextMenu, setContextMenu] = useState<{
+    chatId: string;
+    position: { x: number; y: number };
+  } | null>(null);
+
+  const archivedChats = useMemo(() =>
+    chats.filter((c) => c.archived),
+    [chats]
+  );
+
+  const activeChats = useMemo(() =>
+    chats.filter((c) => !c.archived),
+    [chats]
+  );
+
+  const displayChats = viewMode === 'archived' ? archivedChats : activeChats;
 
   const filteredChats = useMemo(() => {
-    if (!searchQuery.trim()) return chats;
-    return chats.filter((chat) =>
-      chat.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [chats, searchQuery]);
-
-  const handleDeleteClick = (chatId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setChatToDelete(chatId);
-  };
-
-  const handleConfirmDelete = () => {
-    if (chatToDelete && onDeleteChat) {
-      onDeleteChat(chatToDelete);
-      setChatToDelete(null);
+    let list = displayChats;
+    if (searchQuery.trim()) {
+      list = list.filter((chat) =>
+        chat.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
+    // Sort: pinned first, then by updatedAt descending
+    return [...list].sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return b.updatedAt - a.updatedAt;
+    });
+  }, [displayChats, searchQuery]);
+
+  const pinnedChats = filteredChats.filter((c) => c.pinned);
+  const unpinnedChats = filteredChats.filter((c) => !c.pinned);
+
+  const handleContextMenu = (chatId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const btn = e.currentTarget as HTMLElement;
+    const rect = btn.getBoundingClientRect();
+    setContextMenu({
+      chatId,
+      position: { x: rect.right + 4, y: rect.top },
+    });
   };
 
-  const handleCancelDelete = () => {
-    setChatToDelete(null);
-  };
+  const renderChatItem = (chat: Chat, index: number) => (
+    <div
+      key={chat.id}
+      className={`chat-history-item-chatgpt ${activeChat === chat.id ? 'active' : ''}`}
+      onClick={() => onSelectChat(chat.id)}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        setContextMenu({
+          chatId: chat.id,
+          position: { x: e.clientX, y: e.clientY },
+        });
+      }}
+      style={{ animationDelay: `${index * 30}ms` }}
+    >
+      <div className="chat-item-accent" />
+      <div className="chat-item-content-chatgpt">
+        <div className="chat-item-top-row">
+          <p className="chat-item-title-chatgpt">
+            {chat.pinned && <span className="chat-pin-indicator"><PinSmallIcon /></span>}
+            {chat.title}
+          </p>
+          <span className="chat-item-time">{formatRelative(chat.updatedAt)}</span>
+        </div>
+        <p className="chat-item-preview">{getPreview(chat)}</p>
+      </div>
+      <button
+        className="chat-item-dots-btn"
+        onClick={(e) => handleContextMenu(chat.id, e)}
+        title="More options"
+      >
+        <DotsIcon />
+      </button>
+    </div>
+  );
+
+  const contextChat = contextMenu ? chats.find((c) => c.id === contextMenu.chatId) : null;
 
   return (
     <div className="chat-history-chatgpt">
@@ -90,6 +183,27 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
           <IconSearch />
         </button>
       </div>
+
+      {/* View mode tabs */}
+      <div className="chat-view-tabs">
+        <button
+          className={`chat-view-tab ${viewMode === 'chats' ? 'chat-view-tab--active' : ''}`}
+          onClick={() => setViewMode('chats')}
+        >
+          Chats
+        </button>
+        <button
+          className={`chat-view-tab ${viewMode === 'archived' ? 'chat-view-tab--active' : ''}`}
+          onClick={() => setViewMode('archived')}
+        >
+          <ArchiveTabIcon />
+          Archived
+          {archivedChats.length > 0 && (
+            <span className="chat-view-tab-badge">{archivedChats.length}</span>
+          )}
+        </button>
+      </div>
+
       {showSearch && (
         <div className="chat-history-search-chatgpt">
           <input
@@ -111,52 +225,58 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
               </svg>
             </div>
             <p className="no-chats-title">
-              {chats.length === 0 ? 'No conversations yet' : 'No results found'}
+              {viewMode === 'archived'
+                ? 'No archived chats'
+                : chats.length === 0
+                  ? 'No conversations yet'
+                  : 'No results found'}
             </p>
             <p className="no-chats-subtitle">
-              {chats.length === 0 ? 'Start a new chat to begin exploring' : 'Try a different search term'}
+              {viewMode === 'archived'
+                ? 'Archived chats will appear here'
+                : chats.length === 0
+                  ? 'Start a new chat to begin exploring'
+                  : 'Try a different search term'}
             </p>
           </div>
         ) : (
-          filteredChats.map((chat, index) => (
-            <div
-              key={chat.id}
-              className={`chat-history-item-chatgpt ${activeChat === chat.id ? 'active' : ''}`}
-              onClick={() => onSelectChat(chat.id)}
-              style={{ animationDelay: `${index * 30}ms` }}
-            >
-              <div className="chat-item-accent" />
-              <div className="chat-item-content-chatgpt">
-                <div className="chat-item-top-row">
-                  <p className="chat-item-title-chatgpt">{chat.title}</p>
-                  <span className="chat-item-time">{formatRelative(chat.updatedAt)}</span>
+          <>
+            {viewMode === 'chats' && pinnedChats.length > 0 && (
+              <>
+                <div className="chat-section-label">
+                  <PinSmallIcon />
+                  <span>Pinned</span>
                 </div>
-                <p className="chat-item-preview">{getPreview(chat)}</p>
-              </div>
-              {onDeleteChat && (
-                <button
-                  className="chat-item-delete-chatgpt"
-                  onClick={(e) => handleDeleteClick(chat.id, e)}
-                  title="Delete chat"
-                >
-                  <IconTrash />
-                </button>
-              )}
-            </div>
-          ))
+                {pinnedChats.map((chat, i) => renderChatItem(chat, i))}
+                {unpinnedChats.length > 0 && (
+                  <div className="chat-section-label">
+                    <span>Recent</span>
+                  </div>
+                )}
+              </>
+            )}
+            {(viewMode === 'archived' ? filteredChats : unpinnedChats).map((chat, i) =>
+              renderChatItem(chat, pinnedChats.length + i)
+            )}
+          </>
         )}
       </div>
 
-      <ConfirmDialog
-        isOpen={chatToDelete !== null}
-        title="Delete Conversation"
-        message="This conversation and all its associated memories, images, documents, and analyses will be permanently removed. This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Keep"
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        isDangerous={true}
-      />
+      {/* Context Menu */}
+      {contextMenu && contextChat && onDeleteChat && onRenameChat && onPinChat && onArchiveChat && (
+        <ChatContextMenu
+          chatId={contextMenu.chatId}
+          chatTitle={contextChat.title}
+          isPinned={contextChat.pinned}
+          isArchived={contextChat.archived}
+          position={contextMenu.position}
+          onClose={() => setContextMenu(null)}
+          onRename={onRenameChat}
+          onPin={onPinChat}
+          onArchive={onArchiveChat}
+          onDelete={onDeleteChat}
+        />
+      )}
     </div>
   );
 };

@@ -16,7 +16,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 12px;
+  padding: var(--density-padding);
   flex-shrink: 0;
   border-bottom: 1px solid rgba(0, 217, 255, 0.08);
 }
@@ -218,7 +218,7 @@
 
 /* ===== CHAT HISTORY ITEMS ===== */
 .chat-history-item-chatgpt {
-  padding: 10px 10px 10px 0;
+  padding: var(--density-item-padding) var(--density-item-padding) var(--density-item-padding) 0;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 10px;
@@ -354,45 +354,136 @@
   color: rgba(148, 163, 184, 0.5);
 }
 
-/* ===== DELETE BUTTON ===== */
+/* ===== DELETE BUTTON (deprecated - replaced by context menu) ===== */
 .chat-item-delete-chatgpt {
+  display: none;
+}
+
+/* ===== THREE-DOTS BUTTON ===== */
+.chat-item-dots-btn {
   opacity: 0;
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
   border: none;
   background: transparent;
   color: rgba(148, 163, 184, 0.4);
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 200ms ease;
+  transition: all 180ms ease;
   flex-shrink: 0;
   padding: 0;
   position: relative;
   z-index: 2;
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
-.chat-history-item-chatgpt:hover .chat-item-delete-chatgpt {
+.chat-history-item-chatgpt:hover .chat-item-dots-btn {
   opacity: 1;
 }
 
-.chat-item-delete-chatgpt:hover {
-  background: rgba(255, 68, 68, 0.12);
-  color: #ff5555;
+.chat-item-dots-btn:hover {
+  background: rgba(0, 217, 255, 0.1);
+  color: rgba(0, 232, 255, 0.9);
   transform: scale(1.1);
 }
 
-.chat-item-delete-chatgpt:active {
+.chat-item-dots-btn:active {
   transform: scale(0.92);
 }
 
-.chat-item-delete-chatgpt svg {
+.chat-item-dots-btn svg {
   width: 14px;
   height: 14px;
+}
+
+/* ===== VIEW MODE TABS ===== */
+.chat-view-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.06);
+}
+
+.chat-view-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: rgba(148, 163, 184, 0.5);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 180ms ease;
+  letter-spacing: -0.01em;
+}
+
+.chat-view-tab:hover {
+  color: rgba(160, 174, 192, 0.8);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.chat-view-tab--active {
+  color: rgba(0, 232, 255, 0.9);
+  background: rgba(0, 217, 255, 0.08);
+}
+
+.chat-view-tab--active:hover {
+  color: rgba(0, 232, 255, 0.95);
+  background: rgba(0, 217, 255, 0.1);
+}
+
+.chat-view-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: rgba(0, 217, 255, 0.12);
+  color: rgba(0, 232, 255, 0.8);
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ===== SECTION LABELS (Pinned / Recent) ===== */
+.chat-section-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px 4px;
+  color: rgba(148, 163, 184, 0.4);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.chat-section-label svg {
+  width: 10px;
+  height: 10px;
+  opacity: 0.6;
+}
+
+/* ===== PIN INDICATOR ===== */
+.chat-pin-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+  color: rgba(0, 217, 255, 0.5);
+  vertical-align: middle;
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -556,4 +647,45 @@
 
 [data-theme="light"] .chat-item-delete-chatgpt {
   color: rgba(100, 116, 139, 0.4);
+}
+
+/* Light theme - new elements */
+[data-theme="light"] .chat-item-dots-btn {
+  color: rgba(100, 116, 139, 0.4);
+}
+
+[data-theme="light"] .chat-item-dots-btn:hover {
+  background: rgba(8, 145, 178, 0.08);
+  color: #0891b2;
+}
+
+[data-theme="light"] .chat-view-tabs {
+  border-bottom-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .chat-view-tab {
+  color: rgba(100, 116, 139, 0.55);
+}
+
+[data-theme="light"] .chat-view-tab:hover {
+  color: rgba(100, 116, 139, 0.8);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .chat-view-tab--active {
+  color: #0891b2;
+  background: rgba(8, 145, 178, 0.06);
+}
+
+[data-theme="light"] .chat-view-tab-badge {
+  background: rgba(8, 145, 178, 0.1);
+  color: #0891b2;
+}
+
+[data-theme="light"] .chat-section-label {
+  color: rgba(100, 116, 139, 0.5);
+}
+
+[data-theme="light"] .chat-pin-indicator {
+  color: rgba(8, 145, 178, 0.5);
 }

@@ -306,18 +306,22 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
               <p className="settings-section-desc">Configure how the chat experience works.</p>
 
               <div className="settings-group">
+                <h3 className="settings-group-title">Input Behavior</h3>
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <span className="settings-row-label">Enter to Send</span>
-                    <span className="settings-row-hint">Press Enter to send messages instead of adding a new line</span>
+                    <span className="settings-row-hint">Press Enter to send messages. When off, use Shift+Enter or the send button.</span>
                   </div>
                   <Toggle checked={settings.enterToSend} onChange={v => updateSetting('enterToSend', v)} />
                 </div>
+              </div>
 
+              <div className="settings-group">
+                <h3 className="settings-group-title">Display</h3>
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <span className="settings-row-label">Show Timestamps</span>
-                    <span className="settings-row-hint">Display time next to each message</span>
+                    <span className="settings-row-hint">Display time next to each message in conversations</span>
                   </div>
                   <Toggle checked={settings.showTimestamps} onChange={v => updateSetting('showTimestamps', v)} />
                 </div>
@@ -325,17 +329,18 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <span className="settings-row-label">Auto-Scroll</span>
-                    <span className="settings-row-hint">Automatically scroll to the latest message</span>
+                    <span className="settings-row-hint">Automatically scroll to the latest message as new content arrives</span>
                   </div>
                   <Toggle checked={settings.autoScroll} onChange={v => updateSetting('autoScroll', v)} />
                 </div>
               </div>
 
               <div className="settings-group settings-group--danger">
+                <h3 className="settings-group-title settings-group-title--danger">Danger Zone</h3>
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <span className="settings-row-label">Clear All Chats</span>
-                    <span className="settings-row-hint">Permanently delete all conversations</span>
+                    <span className="settings-row-hint">Permanently delete all conversations. This action cannot be undone.</span>
                   </div>
                   <button
                     className={`settings-danger-btn ${confirmClearChats ? 'settings-danger-btn--confirm' : ''}`}
@@ -355,28 +360,33 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
               <p className="settings-section-desc">Manage your data and privacy preferences.</p>
 
               <div className="settings-group">
+                <h3 className="settings-group-title">Data Storage</h3>
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <span className="settings-row-label">Save Chat History</span>
-                    <span className="settings-row-hint">Store conversations locally on this device</span>
+                    <span className="settings-row-hint">Store conversations locally on this device. Turning this off won&apos;t delete existing chats.</span>
                   </div>
                   <Toggle checked={settings.saveChatHistory} onChange={v => updateSetting('saveChatHistory', v)} />
                 </div>
+              </div>
 
+              <div className="settings-group">
+                <h3 className="settings-group-title">Analytics</h3>
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <span className="settings-row-label">Allow Data Usage</span>
-                    <span className="settings-row-hint">Help improve Nova AI by sharing anonymized usage data</span>
+                    <span className="settings-row-hint">Help improve Nova AI by sharing anonymized usage data. No conversations are ever shared.</span>
                   </div>
                   <Toggle checked={settings.allowDataUsage} onChange={v => updateSetting('allowDataUsage', v)} />
                 </div>
               </div>
 
               <div className="settings-group settings-group--danger">
+                <h3 className="settings-group-title settings-group-title--danger">Danger Zone</h3>
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <span className="settings-row-label">Clear All Data</span>
-                    <span className="settings-row-hint">Delete all chats, settings, and log out</span>
+                    <span className="settings-row-hint">Delete all chats, settings, and sign out of your account. This cannot be undone.</span>
                   </div>
                   <button
                     className={`settings-danger-btn ${confirmClearData ? 'settings-danger-btn--confirm' : ''}`}
@@ -420,10 +430,11 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                   </div>
 
                   <div className="settings-group">
+                    <h3 className="settings-group-title">Profile Information</h3>
                     <div className="settings-row">
                       <div className="settings-row-info">
                         <span className="settings-row-label">Username</span>
-                        <span className="settings-row-hint">Your display name</span>
+                        <span className="settings-row-hint">Your display name visible to others</span>
                       </div>
                       <span className="settings-row-value">{userProfile.username}</span>
                     </div>
@@ -432,19 +443,22 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                       <div className="settings-row">
                         <div className="settings-row-info">
                           <span className="settings-row-label">Email</span>
-                          <span className="settings-row-hint">Your account email address</span>
+                          <span className="settings-row-hint">Used for account recovery and notifications</span>
                         </div>
                         <span className="settings-row-value">{userProfile.email}</span>
                       </div>
                     )}
+                  </div>
 
+                  <div className="settings-group">
+                    <h3 className="settings-group-title">Security</h3>
                     <div className="settings-row">
                       <div className="settings-row-info">
                         <span className="settings-row-label">Password</span>
                         <span className="settings-row-hint">
                           {userProfile.githubUsername
-                            ? 'Managed by GitHub'
-                            : 'Last set during account creation'}
+                            ? 'Managed by GitHub — change it through your GitHub account'
+                            : 'We\u2019ll send a secure reset link to your email'}
                         </span>
                       </div>
                       <div className="settings-password-group">
@@ -463,10 +477,11 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                   </div>
 
                   <div className="settings-group">
+                    <h3 className="settings-group-title">Session</h3>
                     <div className="settings-row">
                       <div className="settings-row-info">
                         <span className="settings-row-label">Log Out</span>
-                        <span className="settings-row-hint">Sign out of your account on this device</span>
+                        <span className="settings-row-hint">Sign out of your account on this device. Your data will be preserved.</span>
                       </div>
                       <button className="settings-logout-btn" onClick={onLogout}>
                         <LogOutIcon />

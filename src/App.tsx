@@ -25,10 +25,18 @@ function App() {
   const [appSettings, setAppSettings] = useState<SettingsState>(loadSettings);
   const streamingResponseRef = useRef<string>('');
 
-  // Apply theme to document root
+  // Apply theme, font size, and UI density to document root
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', appSettings.theme);
   }, [appSettings.theme]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--app-font-size', `${appSettings.fontSize}px`);
+  }, [appSettings.fontSize]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-density', appSettings.uiDensity);
+  }, [appSettings.uiDensity]);
 
   // Load saved chats when user logs in, clear when logged out
   useEffect(() => {
@@ -125,6 +133,22 @@ function App() {
   // Listen for Supabase auth state changes (Google OAuth, email login)
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
+      // Handle password recovery redirect
+      if (event === 'PASSWORD_RECOVERY' && session?.user) {
+        const newPassword = window.prompt('Enter your new password (min 8 chars, must include uppercase, lowercase, and number):');
+        if (newPassword && newPassword.length >= 8) {
+          const { error } = await supabase.auth.updateUser({ password: newPassword });
+          if (error) {
+            alert('Failed to update password: ' + error.message);
+          } else {
+            alert('Password updated successfully!');
+          }
+        } else if (newPassword !== null) {
+          alert('Password must be at least 8 characters with uppercase, lowercase, and a number.');
+        }
+        return;
+      }
+
       // Only process events that have a valid session
       if ((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session?.user) {
         // If already have a profile loaded, don't override
@@ -275,6 +299,27 @@ function App() {
     }
   }, [activeChat]);
 
+  const handleRenameChat = useCallback((chatId: string, newTitle: string) => {
+    setChats((prev) =>
+      prev.map((c) => (c.id === chatId ? { ...c, title: newTitle } : c))
+    );
+  }, []);
+
+  const handlePinChat = useCallback((chatId: string) => {
+    setChats((prev) =>
+      prev.map((c) => (c.id === chatId ? { ...c, pinned: !c.pinned } : c))
+    );
+  }, []);
+
+  const handleArchiveChat = useCallback((chatId: string) => {
+    setChats((prev) =>
+      prev.map((c) => (c.id === chatId ? { ...c, archived: !c.archived } : c))
+    );
+    if (activeChat === chatId) {
+      setActiveChat(null);
+    }
+  }, [activeChat]);
+
   const handleSectionChange = useCallback((section: string) => {
     setActiveSection(section);
   }, []);
@@ -368,6 +413,9 @@ function App() {
             activeChat={activeChat}
             onSelectChat={handleSelectChat}
             onDeleteChat={handleDeleteChat}
+            onRenameChat={handleRenameChat}
+            onPinChat={handlePinChat}
+            onArchiveChat={handleArchiveChat}
             onNewChat={handleNewChat}
           />
           <div className="chat-container">

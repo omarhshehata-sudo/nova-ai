@@ -11,6 +11,8 @@ export interface Chat {
   messages: Message[];
   createdAt: number;
   updatedAt: number;
+  pinned?: boolean;
+  archived?: boolean;
 }
 
 export interface SidebarIcon {

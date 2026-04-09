@@ -59,7 +59,7 @@
   --fontFamily: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --fontMono: 'Fira Code', 'Courier New', monospace;
-  --fontSize: 16px;
+  --fontSize: var(--app-font-size, 16px);
   --fontWeightRegular: 400;
   --fontWeightMedium: 500;
   --fontWeightSemibold: 600;
@@ -69,6 +69,12 @@
   --lineHeightTight: 1.2;
   --lineHeightNormal: 1.5;
   --lineHeightRelaxed: 1.75;
+
+  /* Density spacing (default = comfortable) */
+  --density-padding: 12px;
+  --density-gap: 10px;
+  --density-item-padding: 10px;
+  --density-section-gap: 16px;
 }
 
 /* Global Styles */
@@ -135,4 +141,26 @@ body {
 [data-theme="light"] ::selection {
   background: #0891b2;
   color: #ffffff;
+}
+
+/* ===== UI DENSITY OVERRIDES ===== */
+[data-density="compact"] {
+  --density-padding: 8px;
+  --density-gap: 6px;
+  --density-item-padding: 6px;
+  --density-section-gap: 10px;
+}
+
+[data-density="comfortable"] {
+  --density-padding: 12px;
+  --density-gap: 10px;
+  --density-item-padding: 10px;
+  --density-section-gap: 16px;
+}
+
+[data-density="spacious"] {
+  --density-padding: 18px;
+  --density-gap: 14px;
+  --density-item-padding: 14px;
+  --density-section-gap: 22px;
 }

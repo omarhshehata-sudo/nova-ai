@@ -4,7 +4,7 @@
   animation: messageFadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: var(--density-gap, 8px);
 }
 
 .message-user {
@@ -34,7 +34,7 @@
 /* ===== MESSAGE INNER CONTAINER ===== */
 .message-container {
   display: flex;
-  gap: 14px;
+  gap: var(--density-gap, 14px);
   align-items: flex-start;
   max-width: 680px;
   width: 100%;
@@ -180,11 +180,12 @@
 .message-bubble {
   flex: 1;
   min-width: 0;
-  padding: 14px 18px;
+  padding: var(--density-item-padding, 14px) var(--density-padding, 18px);
   border-radius: 18px;
   transition: all 260ms ease;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  font-size: var(--app-font-size, 16px);
 }
 
 /* --- User bubble --- */
