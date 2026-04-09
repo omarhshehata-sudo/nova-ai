@@ -170,29 +170,32 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({
 
     setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      const profile: UserProfile = {
-        username: username.trim(),
-        profilePic,
+    // Get Supabase user email first, then create profile
+    const { data: { user: supabaseUser } } = await supabase.auth.getUser();
+    const email = supabaseUser?.email || undefined;
+
+    const isRealGithub = githubAuth.user.id !== 0;
+    const profile: UserProfile = {
+      username: username.trim(),
+      profilePic,
+      ...(isRealGithub ? {
         githubId: githubAuth.user.id.toString(),
         githubUsername: githubAuth.user.login,
-      };
+      } : {}),
+      ...(email ? { email } : {}),
+    };
 
-      localStorage.setItem('userProfile', JSON.stringify(profile));
-      // Save by GitHub user ID so profile survives logout
-      if (githubAuth.user.id) {
-        localStorage.setItem(`userProfile_github_${githubAuth.user.id}`, JSON.stringify(profile));
-      }
-      // Also save by email if logged in via Supabase
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        if (user?.email) {
-          localStorage.setItem(`userProfile_email_${user.email}`, JSON.stringify(profile));
-        }
-      });
-      setLoading(false);
-      onComplete(profile);
-    }, 500);
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+    // Save by GitHub user ID so profile survives logout
+    if (isRealGithub) {
+      localStorage.setItem(`userProfile_github_${githubAuth.user.id}`, JSON.stringify(profile));
+    }
+    // Save by email so profile survives logout
+    if (email) {
+      localStorage.setItem(`userProfile_email_${email}`, JSON.stringify(profile));
+    }
+    setLoading(false);
+    onComplete(profile);
   };
 
   return (

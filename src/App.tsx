@@ -25,7 +25,7 @@ function App() {
   // Load saved chats when user logs in, clear when logged out
   useEffect(() => {
     if (userProfile) {
-      const key = userProfile.githubId || userProfile.username || 'unknown';
+      const key = userProfile.githubId || userProfile.email || userProfile.username || 'unknown';
       try {
         const saved = localStorage.getItem(`chats_${key}`);
         if (saved) {
@@ -48,7 +48,7 @@ function App() {
   // Save chats to localStorage whenever they change (only if logged in)
   useEffect(() => {
     if (userProfile) {
-      const key = userProfile.githubId || userProfile.username || 'unknown';
+      const key = userProfile.githubId || userProfile.email || userProfile.username || 'unknown';
       localStorage.setItem(`chats_${key}`, JSON.stringify(chats));
     }
   }, [chats, userProfile]);
@@ -56,7 +56,7 @@ function App() {
   // Save active chat to localStorage (only if logged in)
   useEffect(() => {
     if (!userProfile) return;
-    const key = userProfile.githubId || userProfile.username || 'unknown';
+    const key = userProfile.githubId || userProfile.email || userProfile.username || 'unknown';
     if (activeChat) {
       localStorage.setItem(`activeChat_${key}`, activeChat);
     } else {
@@ -114,22 +114,14 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Listen for Supabase auth state changes (Google OAuth callback)
-  const hasHandledInitialSession = useRef(false);
+  // Listen for Supabase auth state changes (Google OAuth, email login)
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
-      // Skip the initial session restore — only react to fresh logins
-      if (event === 'INITIAL_SESSION') {
-        hasHandledInitialSession.current = true;
-        return;
-      }
-
-      if (event === 'SIGNED_IN' && session?.user && hasHandledInitialSession.current) {
-        const savedProfile = localStorage.getItem('userProfile');
-        if (savedProfile) {
-          try {
-            setUserProfile(JSON.parse(savedProfile));
-          } catch { /* ignore */ }
+      // Only process events that have a valid session
+      if ((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session?.user) {
+        // If already have a profile loaded, don't override
+        const existingProfile = localStorage.getItem('userProfile');
+        if (existingProfile) {
           return;
         }
 

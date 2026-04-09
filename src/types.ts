@@ -25,6 +25,7 @@ export interface UserProfile {
   profilePic: string; // base64 or URL
   githubId?: string;
   githubUsername?: string;
+  email?: string;
 }
 
 export interface GitHubAuth {
