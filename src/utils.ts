@@ -28,11 +28,12 @@ export const createMessage = (role: 'user' | 'assistant', content: string): Mess
   };
 };
 
-export const simulateStreamingResponse = async (
+export const simulateStreamingResponse = (
   prompt: string,
   onChunk: (chunk: string) => void,
   onComplete: (fullResponse: string) => void
-): Promise<void> => {
+): (() => void) => {
+  let aborted = false;
   // Simulate various responses based on keywords
   let fullResponse = '';
 
@@ -92,6 +93,7 @@ Feel free to explore the interface—try asking about code, poems, quantum compu
   // Stream character by character with variable delays for natural feel
   let index = 0;
   const streamChar = () => {
+    if (aborted) return;
     if (index < fullResponse.length) {
       const char = fullResponse[index];
       onChunk(char);
@@ -107,6 +109,9 @@ Feel free to explore the interface—try asking about code, poems, quantum compu
 
   // Small delay before starting to stream (simulate API latency)
   setTimeout(streamChar, 200);
+
+  // Return abort function
+  return () => { aborted = true; };
 };
 
 /* ===== Memory extraction ===== */
