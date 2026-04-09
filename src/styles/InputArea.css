@@ -305,6 +305,45 @@
   }
 }
 
+/* ===== STOP GENERATING BUTTON ===== */
+.input-stop-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  animation: stopGlow 1.5s ease-in-out infinite;
+  position: relative;
+}
+
+.input-stop-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px) scale(1.04);
+}
+
+.input-stop-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+@keyframes stopGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4), 0 0 40px rgba(239, 68, 68, 0.1); }
+}
+
+/* Pulse ring around stop button */
+.stop-pulse-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 13px;
+  border: 2px solid rgba(239, 68, 68, 0.35);
+  animation: stopPulse 1.4s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes stopPulse {
+  0% { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
 /* ===== LIGHT THEME ===== */
 [data-theme="light"] .input-dock {
   background: #ffffff;
@@ -356,4 +395,15 @@
 
 [data-theme="light"] .input-disclaimer {
   color: #94a3b8;
+}
+
+[data-theme="light"] .input-stop-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+[data-theme="light"] .input-stop-btn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.4);
 }

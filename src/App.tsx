@@ -30,6 +30,7 @@ function App() {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [memoryEnabled, setMemoryEnabled] = useState(true);
   const streamingResponseRef = useRef<string>('');
+  const abortStreamRef = useRef<(() => void) | null>(null);
 
   // Apply theme, font size, and UI density to document root
   useEffect(() => {
@@ -288,7 +289,7 @@ function App() {
         }
       }
 
-      simulateStreamingResponse(
+      const abort = simulateStreamingResponse(
         userMessage,
         (chunk) => {
           streamingResponseRef.current += chunk;
@@ -319,11 +320,22 @@ function App() {
         () => {
           setIsLoading(false);
           streamingResponseRef.current = '';
+          abortStreamRef.current = null;
         }
       );
+      abortStreamRef.current = abort;
     },
     [activeChat, chats, memoryEnabled, memories]
   );
+
+  const handleStopGenerating = useCallback(() => {
+    if (abortStreamRef.current) {
+      abortStreamRef.current();
+      abortStreamRef.current = null;
+    }
+    setIsLoading(false);
+    streamingResponseRef.current = '';
+  }, []);
 
   const handleNewChat = useCallback(() => {
     const newChat = createNewChat();
@@ -499,6 +511,7 @@ function App() {
             />
             <InputArea
               onSendMessage={handleSendMessage}
+              onStopGenerating={handleStopGenerating}
               isLoading={isLoading}
               enterToSend={appSettings.enterToSend}
             />

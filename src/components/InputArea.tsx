@@ -6,6 +6,7 @@ type DictationState = 'idle' | 'listening' | 'error';
 
 interface InputAreaProps {
   onSendMessage: (message: string) => void;
+  onStopGenerating: () => void;
   isLoading: boolean;
   enterToSend?: boolean;
 }
@@ -13,13 +14,14 @@ interface InputAreaProps {
 const SpeechRecognitionAPI =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading, enterToSend = true }) => {
+export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGenerating, isLoading, enterToSend = true }) => {
   const [input, setInput] = useState('');
   const [focused, setFocused] = useState(false);
   const [dictation, setDictation] = useState<DictationState>('idle');
   const [dictationError, setDictationError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
+  const dictationBaseRef = useRef<string>('');
 
   const handleSend = () => {
     if (input.trim() && !isLoading) {
@@ -81,6 +83,8 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading, 
     recognition.lang = 'en-US';
     recognitionRef.current = recognition;
 
+    // Capture current input as the base text before dictation starts
+    dictationBaseRef.current = input.endsWith(' ') || input === '' ? input : input + ' ';
     let finalTranscript = '';
 
     recognition.onstart = () => {
@@ -98,10 +102,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading, 
           interim += transcript;
         }
       }
-      setInput(prev => {
-        const base = prev.endsWith(' ') || prev === '' ? prev : prev + ' ';
-        return (base + finalTranscript + interim).replace(/  +/g, ' ');
-      });
+      setInput((dictationBaseRef.current + finalTranscript + interim).replace(/  +/g, ' '));
     };
 
     recognition.onerror = (event: any) => {
@@ -144,13 +145,12 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading, 
         <textarea
           ref={textareaRef}
           className="input-field"
-          placeholder={dictation === 'listening' ? 'Listening…' : 'Ask Nova anything…'}
+          placeholder={dictation === 'listening' ? 'Listening…' : isLoading ? 'Generating…' : 'Ask Nova anything…'}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          disabled={isLoading}
           rows={1}
         />
 
@@ -175,14 +175,27 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, isLoading, 
             )}
             {dictation === 'listening' && <span className="mic-pulse-ring" />}
           </button>
-          <button
-            className="input-icon-btn input-send-btn"
-            onClick={handleSend}
-            disabled={!input.trim() || isLoading}
-            aria-label="Send message"
-          >
-            <IconSend />
-          </button>
+          {isLoading ? (
+            <button
+              className="input-icon-btn input-stop-btn"
+              onClick={onStopGenerating}
+              aria-label="Stop generating"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2" />
+              </svg>
+              <span className="stop-pulse-ring" />
+            </button>
+          ) : (
+            <button
+              className="input-icon-btn input-send-btn"
+              onClick={handleSend}
+              disabled={!input.trim()}
+              aria-label="Send message"
+            >
+              <IconSend />
+            </button>
+          )}
         </div>
       </div>
       {dictationError && (
