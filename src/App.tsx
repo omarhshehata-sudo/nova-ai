@@ -6,6 +6,7 @@ import { InputArea } from './components/InputArea';
 import { ChatHistory } from './components/ChatHistory';
 import { AuthModal } from './components/AuthModal';
 import { ProfileSetup } from './components/ProfileSetup';
+import { Settings } from './components/Settings';
 import { createNewChat, createMessage, generateChatTitle, simulateStreamingResponse } from './utils';
 import { supabase } from './supabaseClient';
 import './styles/globals.css';
@@ -345,33 +346,7 @@ function App() {
         githubAuth={githubAuth}
         onComplete={handleProfileSetupComplete}
       />
-      {/* Temp logout button for testing - remove later */}
-      {userProfile && (
-        <button
-          onClick={async () => {
-            await supabase.auth.signOut();
-            localStorage.removeItem('githubAuth');
-            localStorage.removeItem('userProfile');
-            setUserProfile(null);
-            setGithubAuth(null);
-          }}
-          style={{
-            position: 'fixed',
-            bottom: '10px',
-            right: '10px',
-            zIndex: 9999,
-            padding: '6px 12px',
-            background: '#ff4444',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '12px',
-          }}
-        >
-          Logout (temp)
-        </button>
-      )}
+
       <Sidebar
         activeSection={activeSection}
         onSectionChange={handleSectionChange}
@@ -401,37 +376,29 @@ function App() {
             />
           </div>
         </>
+      ) : activeSection === 'settings' ? (
+        <Settings
+          userProfile={userProfile}
+          onLogout={async () => {
+            await supabase.auth.signOut();
+            localStorage.removeItem('githubAuth');
+            localStorage.removeItem('userProfile');
+            setUserProfile(null);
+            setGithubAuth(null);
+            setActiveSection('chat');
+          }}
+          onClearChats={() => {
+            setChats([]);
+            setActiveChat(null);
+          }}
+          onBack={() => handleSectionChange('chat')}
+        />
       ) : (
         <div className="section-container">
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '64px', marginBottom: '16px' }}>
-              {activeSection === 'search' && '🔍'}
-              {activeSection === 'memory' && '💾'}
-              {activeSection === 'images' && '🖼️'}
-              {activeSection === 'tools' && '🛠️'}
-              {activeSection === 'settings' && '⚙️'}
-            </div>
             <p>
               {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)} section coming soon...
             </p>
-            {activeSection === 'settings' && (
-              <button
-                onClick={() => handleSectionChange('chat')}
-                style={{
-                  marginTop: '24px',
-                  padding: '10px 24px',
-                  backgroundColor: '#6366f1',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  fontWeight: '500'
-                }}
-              >
-                Back
-              </button>
-            )}
           </div>
         </div>
       )}
