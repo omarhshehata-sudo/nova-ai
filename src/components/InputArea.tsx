@@ -19,6 +19,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
   const [focused, setFocused] = useState(false);
   const [dictation, setDictation] = useState<DictationState>('idle');
   const [dictationError, setDictationError] = useState<string | null>(null);
+  const silenceTimeout = useRef<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
   const dictationBaseRef = useRef<string>('');
@@ -62,6 +63,10 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
       recognitionRef.current = null;
     }
     setDictation('idle');
+    if (silenceTimeout.current) {
+      clearTimeout(silenceTimeout.current);
+      silenceTimeout.current = null;
+    }
   }, []);
 
   const startDictation = useCallback(() => {
@@ -86,6 +91,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
     // Capture current input as the base text before dictation starts
     dictationBaseRef.current = input.endsWith(' ') || input === '' ? input : input + ' ';
     let finalTranscript = '';
+    // (buffer removed)
 
     recognition.onstart = () => {
       setDictation('listening');
@@ -102,7 +108,13 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
           interim += transcript;
         }
       }
-      setInput((dictationBaseRef.current + finalTranscript + interim).replace(/  +/g, ' '));
+      // buffer is not used for preview
+      // Reset silence timer
+      if (silenceTimeout.current) clearTimeout(silenceTimeout.current);
+      silenceTimeout.current = setTimeout(() => {
+        setInput((dictationBaseRef.current + finalTranscript).replace(/  +/g, ' '));
+        // (buffer removed)
+      }, 4000);
     };
 
     recognition.onerror = (event: any) => {
@@ -121,6 +133,11 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
     recognition.onend = () => {
       setDictation('idle');
       recognitionRef.current = null;
+      if (silenceTimeout.current) {
+        clearTimeout(silenceTimeout.current);
+        silenceTimeout.current = null;
+      }
+      // Only show error if there was a real error, not just on stop
     };
 
     recognition.start();
@@ -162,9 +179,12 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
             disabled={isLoading}
           >
             {dictation === 'listening' ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="6" y="6" width="12" height="12" rx="2" />
-              </svg>
+              <span className="sound-bars">
+                <span className="bar bar1" />
+                <span className="bar bar2" />
+                <span className="bar bar3" />
+                <span className="bar bar4" />
+              </span>
             ) : (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 1a3 3 0 0 0-3 3v12a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
@@ -173,7 +193,6 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
                 <line x1="8" y1="23" x2="16" y2="23" />
               </svg>
             )}
-            {dictation === 'listening' && <span className="mic-pulse-ring" />}
           </button>
           {isLoading ? (
             <button
@@ -201,6 +220,10 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
       {dictationError && (
         <p className="input-dictation-error">{dictationError}</p>
       )}
+      {/* Dictation buffer preview (optional, can remove if not wanted) */}
+      {/* {dictation === 'listening' && dictationBuffer && (
+        <div className="dictation-preview">{dictationBuffer}</div>
+      )} */}
       <p className="input-disclaimer">Nova can make mistakes. Consider checking important information.</p>
     </div>
   );
