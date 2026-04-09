@@ -54,7 +54,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading }) => {
             {messages.map((msg) => (
               <Message key={msg.id} message={msg} />
             ))}
-            {isLoading && (
+            {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
               <div className="message message-assistant">
                 <div className="message-container">
                   <div className="message-avatar">
