@@ -30,19 +30,22 @@ function App() {
   const [githubAuth, setGithubAuth] = useState<GitHubAuth | null>(null);
   const streamingResponseRef = useRef<string>('');
 
-  // Save chats to localStorage whenever they change
+  // Save chats to localStorage whenever they change (only if logged in)
   useEffect(() => {
-    localStorage.setItem('chats', JSON.stringify(chats));
-  }, [chats]);
+    if (userProfile) {
+      localStorage.setItem('chats', JSON.stringify(chats));
+    }
+  }, [chats, userProfile]);
 
-  // Save active chat to localStorage
+  // Save active chat to localStorage (only if logged in)
   useEffect(() => {
+    if (!userProfile) return;
     if (activeChat) {
       localStorage.setItem('activeChat', activeChat);
     } else {
       localStorage.removeItem('activeChat');
     }
-  }, [activeChat]);
+  }, [activeChat, userProfile]);
 
   // Check for existing profile on mount
   useEffect(() => {
