@@ -201,9 +201,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   };
 
   // OAuth handlers
-  const handleOAuth = (provider: string) => {
+  const handleOAuth = async (provider: string) => {
     if (provider.toLowerCase() === 'apple') {
       setError('We don\'t support Apple at this moment');
+      return;
+    }
+
+    if (provider.toLowerCase() === 'google') {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      setLoading(false);
+      if (error) {
+        setError(error.message);
+      }
       return;
     }
 
@@ -231,16 +246,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
       return;
     }
 
-    console.log(`Initiating ${provider} login...`);
-    setSuccessMessage(`Redirecting to ${provider}...`);
-    // In production, you would redirect to OAuth provider
-    setTimeout(() => {
-      setSuccessMessage(`Logged in with ${provider}`);
-      setTimeout(() => {
-        onClose();
-        setStep('choice');
-      }, 1500);
-    }, 1500);
+    setError(`${provider} login is not supported yet`);
   };
 
   const handleSignupMethodSelect = (method: string) => {

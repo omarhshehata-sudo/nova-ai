@@ -114,6 +114,41 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Listen for Supabase auth state changes (Google OAuth callback)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const savedProfile = localStorage.getItem('userProfile');
+        if (savedProfile) {
+          try {
+            setUserProfile(JSON.parse(savedProfile));
+          } catch { /* ignore */ }
+          return;
+        }
+
+        // Check for previously saved profile by email
+        const email = session.user.email;
+        if (email) {
+          const previousProfile = localStorage.getItem(`userProfile_email_${email}`);
+          if (previousProfile) {
+            const profile = JSON.parse(previousProfile) as UserProfile;
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+            setUserProfile(profile);
+            return;
+          }
+        }
+
+        // No profile yet - open profile setup
+        const displayName = session.user.user_metadata?.full_name || session.user.email || 'User';
+        setGithubAuth({ token: '', user: { login: displayName, avatar_url: '', id: 0 } });
+        setIsAuthModalOpen(false);
+        setIsProfileSetupOpen(true);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const currentChat = chats.find((c) => c.id === activeChat);
 
   const handleSendMessage = useCallback(
