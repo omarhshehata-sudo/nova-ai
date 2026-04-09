@@ -20,6 +20,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Reset state when modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      setError('');
+      setSuccessMessage('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+      setStep('choice');
+    }
+  }, [isOpen]);
+
   // Handle OAuth callback on mount
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -32,23 +44,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         // Store auth data
         localStorage.setItem('githubAuth', JSON.stringify(authData));
         
+        // Clean URL first
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
         // Check if user already has a profile
         const existingProfile = localStorage.getItem('userProfile');
         if (existingProfile) {
           // Already set up - just log them in
           setSuccessMessage(`Welcome back!`);
+          setTimeout(() => {
+            onClose();
+            onAuthSuccess?.();
+          }, 1000);
         } else {
-          setSuccessMessage(`Logged in as ${authData.user.login}`);
+          setSuccessMessage(`Logged in! Setting up your profile...`);
+          setTimeout(() => {
+            onClose();
+            onAuthSuccess?.();
+          }, 1000);
         }
-        
-        setTimeout(() => {
-          window.history.replaceState({}, document.title, window.location.pathname);
-          onClose();
-          onAuthSuccess?.();
-          setEmail('');
-          setPassword('');
-          setStep('choice');
-        }, 1500);
       } catch (err) {
         console.error('Failed to parse auth token:', err);
         setError('Authentication failed');
@@ -215,8 +229,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
       const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=user:email&state=${state}`;
       
       console.log('Redirecting to:', githubAuthUrl);
-      // Open in new tab
-      window.open(githubAuthUrl, '_blank');
+      // Redirect in same tab
+      window.location.href = githubAuthUrl;
       return;
     }
 

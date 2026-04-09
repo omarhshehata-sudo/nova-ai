@@ -35,7 +35,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isLoading }) => {
             {/* Hero Section */}
             <div className="hero-section-chatgpt">
               <h1 className="hero-title">Nova AI</h1>
-              <p className="hero-subtitle">Ask anything, get instant answers</p>
+              <p className="hero-subtitle">Your ideas, powered instantly.</p>
 
               {/* Suggestion Cards */}
               <div className="suggestions-grid-chatgpt">
