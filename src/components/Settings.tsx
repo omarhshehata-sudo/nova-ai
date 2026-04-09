@@ -46,6 +46,7 @@ interface SettingsProps {
   onClearChats: () => void;
   onClearAllData: () => void;
   onBack: () => void;
+  onProfileUpdate: (profile: UserProfile) => void;
 }
 
 type SettingsSection = 'general' | 'chat' | 'privacy' | 'account';
@@ -142,7 +143,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   );
 }
 
-export function Settings({ userProfile, settings, onSettingsChange, onLogout, onClearChats, onClearAllData, onBack }: SettingsProps) {
+export function Settings({ userProfile, settings, onSettingsChange, onLogout, onClearChats, onClearAllData, onBack, onProfileUpdate }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<SettingsSection>('general');
   const [saved, setSaved] = useState(false);
   const [passwordResetSent, setPasswordResetSent] = useState(false);
@@ -156,6 +157,9 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
   const [toast, setToast] = useState<string | null>(null);
   const [draft, setDraft] = useState<SettingsState>({ ...settings });
   const initialSettings = useRef(JSON.stringify(settings));
+  // Profile editing state
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileDraft, setProfileDraft] = useState(userProfile ? { username: userProfile.username, profilePic: userProfile.profilePic } : { username: '', profilePic: '' });
 
   const hasUnsaved = JSON.stringify(draft) !== initialSettings.current;
 
@@ -471,7 +475,15 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                 <>
                   <div className="settings-account-card">
                     <div className="settings-account-avatar">
-                      {userProfile.profilePic ? (
+                      {editingProfile ? (
+                        profileDraft.profilePic ? (
+                          <img src={profileDraft.profilePic} alt={profileDraft.username} />
+                        ) : (
+                          <div className="settings-account-avatar-placeholder">
+                            {profileDraft.username.charAt(0).toUpperCase()}
+                          </div>
+                        )
+                      ) : userProfile.profilePic ? (
                         <img src={userProfile.profilePic} alt={userProfile.username} />
                       ) : (
                         <div className="settings-account-avatar-placeholder">
@@ -480,7 +492,19 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                       )}
                     </div>
                     <div className="settings-account-info">
-                      <span className="settings-account-name">{userProfile.username}</span>
+                      {editingProfile ? (
+                        <input
+                          className="settings-profile-edit-input"
+                          type="text"
+                          value={profileDraft.username}
+                          maxLength={32}
+                          onChange={e => setProfileDraft(d => ({ ...d, username: e.target.value }))}
+                          placeholder="Username"
+                          autoFocus
+                        />
+                      ) : (
+                        <span className="settings-account-name">{userProfile.username}</span>
+                      )}
                       {userProfile.email && (
                         <span className="settings-account-email">{userProfile.email}</span>
                       )}
@@ -489,6 +513,53 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                       )}
                     </div>
                     <div className="settings-account-badge">Free Plan</div>
+                    <div className="settings-profile-edit-actions">
+                      {editingProfile ? (
+                        <>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            id="profile-pic-upload"
+                            onChange={e => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = ev => {
+                                  setProfileDraft(d => ({ ...d, profilePic: ev.target?.result as string }));
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                          <button className="settings-profile-pic-btn" onClick={() => document.getElementById('profile-pic-upload')?.click()}>
+                            Change Photo
+                          </button>
+                          <button
+                            className="settings-profile-save-btn"
+                            disabled={!profileDraft.username.trim()}
+                            onClick={() => {
+                              if (!userProfile) return;
+                              const updated = { ...userProfile, username: profileDraft.username.trim(), profilePic: profileDraft.profilePic };
+                              // Save to localStorage
+                              localStorage.setItem('userProfile', JSON.stringify(updated));
+                              if (userProfile.githubId) localStorage.setItem(`userProfile_github_${userProfile.githubId}`, JSON.stringify(updated));
+                              if (userProfile.email) localStorage.setItem(`userProfile_email_${userProfile.email}`, JSON.stringify(updated));
+                              window.dispatchEvent(new Event('storage'));
+                              setEditingProfile(false);
+                              setProfileDraft({ username: updated.username, profilePic: updated.profilePic });
+                              // Notify parent
+                              onProfileUpdate(updated);
+                            }}
+                          >Save</button>
+                          <button className="settings-profile-cancel-btn" onClick={() => { setEditingProfile(false); setProfileDraft({ username: userProfile.username, profilePic: userProfile.profilePic }); }}>Cancel</button>
+                        </>
+                      ) : (
+                        <button className="settings-profile-edit-btn" onClick={() => setEditingProfile(true)}>
+                          Edit
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="settings-group">

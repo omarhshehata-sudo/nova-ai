@@ -560,6 +560,7 @@ function App() {
             setActiveSection('chat');
           }}
           onBack={() => handleSectionChange('chat')}
+          onProfileUpdate={setUserProfile}
         />
       ) : activeSection === 'memory' ? (
         <MemoryPage
