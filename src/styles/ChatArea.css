@@ -7,7 +7,6 @@
   min-width: 0;
   opacity: 1;
   position: relative;
-}
 
 .chat-area-chatgpt::before {
   content: '';
@@ -20,11 +19,11 @@
 
 /* ===== CHAT HEADER ===== */
 .chat-header-chatgpt {
-  padding: 14px 40px;
+  padding: var(--density-padding, 14px) calc(var(--density-padding, 18px) * 2);
   border-bottom: 1px solid rgba(0, 217, 255, 0.12);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--density-gap, 10px);
   background: linear-gradient(180deg, rgba(26, 31, 46, 0.88) 0%, rgba(26, 31, 46, 0.65) 100%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -32,6 +31,7 @@
   position: relative;
   z-index: 2;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.02), inset 0 -1px 0 rgba(0, 217, 255, 0.04);
+}
 }
 
 .chat-header-chatgpt::before {
@@ -41,12 +41,6 @@
   height: 1.5px;
   background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.25), transparent);
   pointer-events: none;
-}
-
-.chat-header-title {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
   background: linear-gradient(90deg, #00d9ff 0%, #00e8ff 50%, #6366f1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -173,7 +167,7 @@
 }
 
 .hero-subtitle {
-  font-size: 19px;
+  font-size: calc(var(--app-font-size, 16px) * 1.18);
   color: rgba(160, 190, 220, 0.9);
   font-weight: 500;
   letter-spacing: 0.3px;
@@ -190,7 +184,7 @@
 .suggestions-grid-chatgpt {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  gap: var(--density-gap, 14px);
   width: 100%;
   position: relative;
   z-index: 2;
@@ -202,7 +196,7 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding: 24px 16px 20px;
+  padding: calc(var(--density-padding, 18px) * 1.2) var(--density-padding, 18px) calc(var(--density-padding, 18px) * 0.9);
   border-radius: 16px;
   background: rgba(30, 36, 52, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -287,11 +281,11 @@
 .card-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(var(--density-gap, 12px) * 0.33);
 }
 
 .suggestion-title {
-  font-size: 14px;
+  font-size: calc(var(--app-font-size, 16px) * 0.88);
   font-weight: 650;
   color: var(--text-primary);
   transition: color 220ms ease;
@@ -302,7 +296,7 @@
 }
 
 .suggestion-desc {
-  font-size: 12.5px;
+  font-size: calc(var(--app-font-size, 16px) * 0.78);
   color: rgba(148, 163, 184, 0.8);
   line-height: 1.35;
   transition: color 220ms ease;
@@ -330,7 +324,7 @@
 }
 
 .quick-prompts-label {
-  font-size: 12px;
+  font-size: calc(var(--app-font-size, 16px) * 0.75);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.2px;
@@ -340,7 +334,7 @@
 .quick-prompts-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: calc(var(--density-gap, 12px) * 0.66);
   justify-content: center;
 }
 
@@ -353,7 +347,7 @@
   background: rgba(30, 36, 52, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: rgba(176, 190, 210, 0.85);
-  font-size: 13px;
+  font-size: calc(var(--app-font-size, 16px) * 0.81);
   font-family: inherit;
   cursor: pointer;
   transition: all 200ms ease;
