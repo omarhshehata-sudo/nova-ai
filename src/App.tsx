@@ -73,6 +73,10 @@ function App() {
 
   // Check for existing profile on mount
   useEffect(() => {
+    // Clean up old shared keys from before per-user storage
+    localStorage.removeItem('chats');
+    localStorage.removeItem('activeChat');
+
     const savedProfile = localStorage.getItem('userProfile');
     if (savedProfile) {
       try {
