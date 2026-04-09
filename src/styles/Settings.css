@@ -1,3 +1,42 @@
+/* ===== PROFILE EDIT INPUT WRAP ===== */
+.settings-profile-edit-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--s-control-bg);
+  border-radius: 8px;
+  border: 1.5px solid var(--accent-cyan);
+  box-shadow: 0 2px 12px rgba(6, 182, 212, 0.10);
+  padding: 4px 10px 4px 8px;
+  margin-bottom: 4px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.settings-profile-edit-input-wrap:focus-within {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+}
+
+.settings-profile-edit-icon {
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+.settings-profile-edit-input {
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  outline: none;
+  box-shadow: none;
+  flex: 1;
+  padding: 8px 0;
+}
 /* ===== PROFILE EDIT INPUT ===== */
 .settings-profile-edit-input {
   padding: 8px 16px;

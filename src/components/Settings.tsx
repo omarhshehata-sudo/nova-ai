@@ -493,15 +493,20 @@ export function Settings({ userProfile, settings, onSettingsChange, onLogout, on
                     </div>
                     <div className="settings-account-info">
                       {editingProfile ? (
-                        <input
-                          className="settings-profile-edit-input"
-                          type="text"
-                          value={profileDraft.username}
-                          maxLength={32}
-                          onChange={e => setProfileDraft(d => ({ ...d, username: e.target.value }))}
-                          placeholder="Username"
-                          autoFocus
-                        />
+                        <div className="settings-profile-edit-input-wrap">
+                          <span className="settings-profile-edit-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16.5 7.5l-9 9M17.5 6.5a2.121 2.121 0 1 1 3 3l-12 12H4.5v-4.5l12-12z"/></svg>
+                          </span>
+                          <input
+                            className="settings-profile-edit-input"
+                            type="text"
+                            value={profileDraft.username}
+                            maxLength={32}
+                            onChange={e => setProfileDraft(d => ({ ...d, username: e.target.value }))}
+                            placeholder="Change your name..."
+                            autoFocus
+                          />
+                        </div>
                       ) : (
                         <span className="settings-account-name">{userProfile.username}</span>
                       )}
