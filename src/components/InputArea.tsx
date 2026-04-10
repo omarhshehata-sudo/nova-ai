@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { IconPlus, IconSend } from './Icons';
 import '../styles/InputArea.css';
-
-type DictationState = 'idle' | 'listening' | 'error';
+import { DictationController } from '../utils/DictationController';
+import type { DictationState } from '../utils/DictationController';
 
 interface InputAreaProps {
   onSendMessage: (message: string) => void;
@@ -11,23 +11,24 @@ interface InputAreaProps {
   enterToSend?: boolean;
 }
 
-const SpeechRecognitionAPI =
-  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
 export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGenerating, isLoading, enterToSend = true }) => {
   const [input, setInput] = useState('');
   const [focused, setFocused] = useState(false);
-  const [dictation, setDictation] = useState<DictationState>('idle');
+  const [dictationState, setDictationState] = useState<DictationState>('idle');
+  const [transcript, setTranscript] = useState('');
+  const [interimTranscript, setInterimTranscript] = useState('');
   const [dictationError, setDictationError] = useState<string | null>(null);
-  const silenceTimeout = useRef<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const recognitionRef = useRef<any>(null);
-  const dictationBaseRef = useRef<string>('');
+  const dictationRef = useRef<DictationController | null>(null);
 
+  // When user sends, use transcript if dictation was active, else use input
   const handleSend = () => {
-    if (input.trim() && !isLoading) {
-      onSendMessage(input);
+    const value = dictationState === 'listening' || dictationState === 'processing' ? transcript : input;
+    if (value.trim() && !isLoading) {
+      onSendMessage(value);
       setInput('');
+      setTranscript('');
+      setInterimTranscript('');
       if (textareaRef.current) {
         textareaRef.current.style.height = '42px';
       }
@@ -55,111 +56,52 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
     el.style.height = '42px';
     const next = Math.min(el.scrollHeight, 160);
     el.style.height = `${next}px`;
-  }, [input]);
+  }, [input, transcript, interimTranscript]);
 
-  const stopDictation = useCallback(() => {
-    if (recognitionRef.current) {
-      recognitionRef.current.abort();
-      recognitionRef.current = null;
-    }
-    setDictation('idle');
-    if (silenceTimeout.current) {
-      clearTimeout(silenceTimeout.current);
-      silenceTimeout.current = null;
-    }
-  }, []);
-
-  const startDictation = useCallback(() => {
-    if (!SpeechRecognitionAPI) {
-      setDictation('error');
-      setDictationError('Speech recognition is not supported in this browser.');
-      setTimeout(() => { setDictation('idle'); setDictationError(null); }, 3000);
-      return;
-    }
-
-    if (dictation === 'listening') {
-      stopDictation();
-      return;
-    }
-
-    const recognition = new SpeechRecognitionAPI();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-    recognitionRef.current = recognition;
-
-    // Capture current input as the base text before dictation starts
-    dictationBaseRef.current = input.endsWith(' ') || input === '' ? input : input + ' ';
-
-    let finalTranscript = '';
-    let lastInterim = '';
-
-    recognition.onstart = () => {
-      setDictation('listening');
-      setDictationError(null);
-    };
-
-    recognition.onresult = (event: any) => {
-      let interim = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript;
-        } else {
-          interim += transcript;
-        }
-      }
-      lastInterim = interim;
-      // Show interim text live
-      setInput((dictationBaseRef.current + finalTranscript + interim).replace(/  +/g, ' '));
-      // Reset silence timer
-      if (silenceTimeout.current) clearTimeout(silenceTimeout.current);
-      silenceTimeout.current = window.setTimeout(() => {
-        // On silence, stop recognition to force final result
-        if (recognitionRef.current) recognitionRef.current.stop();
-      }, 4000);
-    };
-
-    recognition.onerror = (event: any) => {
-      if (event.error === 'not-allowed') {
-        setDictationError('Microphone access denied. Please allow microphone permission.');
-      } else if (event.error === 'no-speech') {
-        setDictationError('No speech detected. Try again.');
-      } else {
-        setDictationError('Dictation error. Please try again.');
-      }
-      setDictation('error');
-      setTimeout(() => { setDictation('idle'); setDictationError(null); }, 3000);
-      recognitionRef.current = null;
-    };
-
-
-    recognition.onend = () => {
-      // Always update input with the latest transcript (final + lastInterim)
-      setInput((dictationBaseRef.current + finalTranscript + lastInterim).replace(/  +/g, ' '));
-      setDictation('idle');
-      recognitionRef.current = null;
-      if (silenceTimeout.current) {
-        clearTimeout(silenceTimeout.current);
-        silenceTimeout.current = null;
-      }
-    };
-
-    recognition.start();
-  }, [dictation, stopDictation]);
-
-  // Cleanup on unmount
+  // Dictation controller setup
   useEffect(() => {
+    dictationRef.current = new DictationController({
+      onTranscript: (final, interim) => {
+        setTranscript(final);
+        setInterimTranscript(interim);
+      },
+      onStateChange: (state) => {
+        setDictationState(state);
+        if (state === 'idle') setInterimTranscript('');
+      },
+      onError: (err) => {
+        setDictationError(err);
+      },
+    });
     return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
+      dictationRef.current?.cancel();
     };
   }, []);
+
+  // Start/stop/cancel dictation handlers
+  const handleMicClick = () => {
+    if (!dictationRef.current) return;
+    if (dictationState === 'listening') {
+      dictationRef.current.stop();
+    } else {
+      setTranscript(input); // Use current input as base
+      dictationRef.current.start();
+    }
+  };
+
+  const handleCancelDictation = () => {
+    dictationRef.current?.cancel();
+    setTranscript('');
+    setInterimTranscript('');
+    setInput('');
+    setDictationError(null);
+  };
+
+
 
   return (
     <div className="input-area">
-      <div className={`input-dock${focused ? ' input-dock--focused' : ''}${dictation === 'listening' ? ' input-dock--dictating' : ''}`}>
+      <div className={`input-dock${focused ? ' input-dock--focused' : ''}${dictationState === 'listening' ? ' input-dock--dictating' : ''}`}>
         <button className="input-icon-btn input-icon-btn--subtle" aria-label="Add attachment">
           <IconPlus />
         </button>
@@ -167,9 +109,20 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
         <textarea
           ref={textareaRef}
           className="input-field"
-          placeholder={dictation === 'listening' ? 'Listening…' : isLoading ? 'Generating…' : 'Ask Nova anything…'}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          placeholder={
+            dictationState === 'listening'
+              ? 'Listening…'
+              : dictationState === 'processing'
+              ? 'Processing…'
+              : isLoading
+              ? 'Generating…'
+              : 'Ask Nova anything…'
+          }
+          value={dictationState === 'listening' || dictationState === 'processing' ? transcript + interimTranscript : input}
+          onChange={(e) => {
+            setInput(e.target.value);
+            if (dictationState !== 'idle') setTranscript(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
@@ -178,18 +131,20 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
 
         <div className="input-actions">
           <button
-            className={`input-icon-btn ${dictation === 'listening' ? 'input-mic-btn--active' : 'input-icon-btn--subtle'}`}
-            aria-label={dictation === 'listening' ? 'Stop dictation' : 'Voice input'}
-            onClick={dictation === 'listening' ? stopDictation : startDictation}
+            className={`input-icon-btn ${dictationState === 'listening' ? 'input-mic-btn--active' : 'input-icon-btn--subtle'}`}
+            aria-label={dictationState === 'listening' ? 'Stop dictation' : 'Voice input'}
+            onClick={handleMicClick}
             disabled={isLoading}
           >
-            {dictation === 'listening' ? (
+            {dictationState === 'listening' ? (
               <span className="sound-bars">
                 <span className="bar bar1" />
                 <span className="bar bar2" />
                 <span className="bar bar3" />
                 <span className="bar bar4" />
               </span>
+            ) : dictationState === 'processing' ? (
+              <span className="input-mic-processing" />
             ) : (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 1a3 3 0 0 0-3 3v12a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
@@ -199,6 +154,16 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
               </svg>
             )}
           </button>
+          {dictationState === 'listening' && (
+            <button
+              className="input-icon-btn input-cancel-btn"
+              aria-label="Cancel dictation"
+              onClick={handleCancelDictation}
+              type="button"
+            >
+              Cancel
+            </button>
+          )}
           {isLoading ? (
             <button
               className="input-icon-btn input-stop-btn"
@@ -214,7 +179,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSendMessage, onStopGener
             <button
               className="input-icon-btn input-send-btn"
               onClick={handleSend}
-              disabled={!input.trim()}
+              disabled={!(dictationState === 'listening' || dictationState === 'processing' ? transcript.trim() : input.trim())}
               aria-label="Send message"
             >
               <IconSend />
